@@ -16,20 +16,20 @@ namespace LaunchCountDown.Windows
         private int _audioSet;
         private List<string> _soundsList = new List<string>();
 
-        public override void Awake()
+        protected override void Awake()
         {
             var parent = Directory.GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
             if (Directory.Exists(Path.Combine(parent.FullName, "Sounds")))
             {
                 _soundsList = Directory.GetDirectories(Path.Combine(parent.FullName, "Sounds")).Select(x => new DirectoryInfo(x)).Select(x => x.Name).ToList();
-                if (_soundsList.Any() && !_soundsList.Contains(LaunchCountdownConfig.Instance.SoundSet))
+                if (_soundsList.Any() && !_soundsList.Contains(LaunchCountdownConfig.Instance.Info.SoundSet))
                 {
-                    LaunchCountdownConfig.Instance.SoundSet = _soundsList.First();
+                    LaunchCountdownConfig.Instance.Info.SoundSet = _soundsList.First();
                 }
             }
             else
             {
-                LaunchCountdownConfig.Instance.IsSoundEnabled = false;
+                LaunchCountdownConfig.Instance.Info.IsSoundEnabled = false;
             }
         }
 
@@ -37,23 +37,23 @@ namespace LaunchCountDown.Windows
         {
             GUILayout.BeginVertical(GUILayout.ExpandHeight(true));
 
-            LaunchCountdownConfig.Instance.IsDebug = GUILayout.Toggle(LaunchCountdownConfig.Instance.IsDebug, "Debug Mode", StyleFactory.ToggleStyle);
+            LaunchCountdownConfig.Instance.Info.IsDebug = GUILayout.Toggle(LaunchCountdownConfig.Instance.Info.IsDebug, "Debug Mode", StyleFactory.ToggleStyle);
 
-            LaunchCountdownConfig.Instance.AbortExecuted = GUILayout.Toggle(LaunchCountdownConfig.Instance.AbortExecuted, "Abort execute", StyleFactory.ToggleStyle);
+            LaunchCountdownConfig.Instance.Info.AbortExecuted = GUILayout.Toggle(LaunchCountdownConfig.Instance.Info.AbortExecuted, "Abort execute", StyleFactory.ToggleStyle);
 
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
-            GUILayout.Label(string.Format("Scale window {0}", Math.Round(LaunchCountdownConfig.Instance.Scale, 2), StyleFactory.LabelStyle));
+            GUILayout.Label(string.Format("Scale window {0}", Math.Round(LaunchCountdownConfig.Instance.Info.Scale, 2), StyleFactory.LabelStyle));
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
-            LaunchCountdownConfig.Instance.Scale = GUILayout.HorizontalSlider(LaunchCountdownConfig.Instance.Scale,.2f, 1f, GUILayout.MaxWidth(160f), GUILayout.MinWidth(140f));
+            LaunchCountdownConfig.Instance.Info.Scale = GUILayout.HorizontalSlider(LaunchCountdownConfig.Instance.Info.Scale,.2f, 1f, GUILayout.MaxWidth(160f), GUILayout.MinWidth(140f));
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
             
-            LaunchCountdownConfig.Instance.IsSoundEnabled = GUILayout.Toggle(LaunchCountdownConfig.Instance.IsSoundEnabled, "Sound enabled", StyleFactory.ToggleStyle);
+            LaunchCountdownConfig.Instance.Info.IsSoundEnabled = GUILayout.Toggle(LaunchCountdownConfig.Instance.Info.IsSoundEnabled, "Sound enabled", StyleFactory.ToggleStyle);
             
            if (_soundsList.Any())
             {
@@ -74,20 +74,20 @@ namespace LaunchCountDown.Windows
                 if (GUILayout.Button("", StyleFactory.ButtonSoundBackStyle))
                 {
                     _audioSet = _audioSet <= 0 ? _soundsList.Count - 1 : _audioSet - 1;
-                    LaunchCountdownConfig.Instance.SoundSet = _soundsList[_audioSet];
+                    LaunchCountdownConfig.Instance.Info.SoundSet = _soundsList[_audioSet];
                     DebugHelper.WriteMessage("Current sound {0}", _soundsList[_audioSet]);
                 }
 
                 GUILayout.FlexibleSpace();
 
-                GUILayout.Label(LaunchCountdownConfig.Instance.SoundSet, StyleFactory.LabelStyle);
+                GUILayout.Label(LaunchCountdownConfig.Instance.Info.SoundSet, StyleFactory.LabelStyle);
 
                 GUILayout.FlexibleSpace();
 
                 if (GUILayout.Button("", StyleFactory.ButtonSoundNextStyle))
                 {
                     _audioSet = _audioSet >= _soundsList.Count - 1 ? 0 : _audioSet + 1;
-                    LaunchCountdownConfig.Instance.SoundSet = _soundsList[_audioSet];
+                    LaunchCountdownConfig.Instance.Info.SoundSet = _soundsList[_audioSet];
                     DebugHelper.WriteMessage("Current sound {0}", _soundsList[_audioSet]);
                 }
 

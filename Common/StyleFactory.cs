@@ -8,7 +8,7 @@ namespace LaunchCountDown.Common
     {
         static StyleFactory()
         {
-            Scale = LaunchCountdownConfig.Instance.Load() ? LaunchCountdownConfig.Instance.Scale : 1f;
+            Scale = LaunchCountdownConfig.Instance.Info.IsLoaded ? LaunchCountdownConfig.Instance.Info.Scale : 1f;
 
             Reload();
         }

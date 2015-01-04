@@ -18,12 +18,12 @@ namespace LaunchCountDown.Common
         internal List<AudioClip> CountDownClips { get; private set; }
         internal List<AudioClip> EventClips { get; private set; }
 
-        public override void Awake()
+        protected override void Awake()
         {
             CountDownClips = new List<AudioClip>();
             EventClips = new List<AudioClip>();
 
-            LaunchCountdownConfig.Instance.OnChanged += ConfigChanged;
+            LaunchCountdownConfig.Instance.Info.OnChanged += ConfigChanged;
 
             Load();
 
@@ -47,14 +47,14 @@ namespace LaunchCountDown.Common
 
         private void Load()
         {
-            if (!LaunchCountdownConfig.Instance.IsSoundEnabled)
+            if (!LaunchCountdownConfig.Instance.Info.IsSoundEnabled)
             {
                 _tick = 15;
                 return;
             }
 
             List<AudioClip> audios =
-                GameDatabase.Instance.databaseAudio.Where(x => x.name.Contains(LaunchCountdownConfig.Instance.SoundSet))
+                GameDatabase.Instance.databaseAudio.Where(x => x.name.Contains(LaunchCountdownConfig.Instance.Info.SoundSet))
                     .ToList();
 
             CountDownClips.Clear();
@@ -66,7 +66,7 @@ namespace LaunchCountDown.Common
             if (!CountDownClips.Any())
             {
                 _tick = 15;
-                LaunchCountdownConfig.Instance.IsSoundEnabled = false;
+                LaunchCountdownConfig.Instance.Info.IsSoundEnabled = false;
                 return;
             }
 
@@ -94,7 +94,7 @@ namespace LaunchCountDown.Common
 
             TryStagingExecute();
 
-            if (!LaunchCountdownConfig.Instance.IsSoundEnabled) return;
+            if (!LaunchCountdownConfig.Instance.Info.IsSoundEnabled) return;
 
             var clip = CountDownClips.FirstOrDefault(x => x.name.EndsWith(string.Format("/{0}", _tick)));
 
@@ -105,6 +105,7 @@ namespace LaunchCountDown.Common
 
 
             DebugHelper.WriteMessage("Sound played {0}", clip.name);
+
             _audioSource.Stop();
             _audioSource.clip = clip;
             _audioSource.Play();
@@ -136,7 +137,7 @@ namespace LaunchCountDown.Common
                 OnVesselAborted(this, EventArgs.Empty);
             }
 
-            if (!LaunchCountdownConfig.Instance.IsSoundEnabled) return;
+            if (!LaunchCountdownConfig.Instance.Info.IsSoundEnabled) return;
 
             _audioSource.Stop();
             _audioSource.clip = EventClips.Single(x => x.name.EndsWith("/Aborted"));
@@ -145,7 +146,7 @@ namespace LaunchCountDown.Common
 
         internal void Launched()
         {
-            LaunchCountdownConfig.Instance.OnChanged -= ConfigChanged;
+            LaunchCountdownConfig.Instance.Info.OnChanged -= ConfigChanged;
 
             DebugHelper.WriteMessage("Vessel launched");
 
@@ -156,7 +157,7 @@ namespace LaunchCountDown.Common
                 OnVesselLaunched(this, EventArgs.Empty);
             }
 
-            if (!LaunchCountdownConfig.Instance.IsSoundEnabled) return;
+            if (!LaunchCountdownConfig.Instance.Info.IsSoundEnabled) return;
 
             StartCoroutine(PlayLaunchedSound());
         }
@@ -180,19 +181,19 @@ namespace LaunchCountDown.Common
 
         internal event EventHandler OnVesselAborted;
 
-        public override void OnDestroy()
+        protected override void OnDestroy()
         {
             EventClips.Clear();
             CountDownClips.Clear();
 
-            LaunchCountdownConfig.Instance.OnChanged -= ConfigChanged;
+            LaunchCountdownConfig.Instance.Info.OnChanged -= ConfigChanged;
 
             base.OnDestroy();
         }
 
         private void CheckEngine()
         {
-            if (LaunchCountdownConfig.Instance.EngineControl)
+            if (LaunchCountdownConfig.Instance.Info.EngineControl)
             {
                 EnableEngineControl();
             }
@@ -264,11 +265,11 @@ namespace LaunchCountDown.Common
         {
             yield return new WaitForSeconds(1);
 
-            if (Mathf.RoundToInt((float) FlightGlobals.ActiveVessel.altitude) <= Mathf.RoundToInt(_defaultAltitude))
+            if (FlightGlobals.ActiveVessel.verticalSpeed <= 0)
             {
                 DebugHelper.WriteMessage("Check Vessel aborted: {0} {1}", FlightGlobals.ActiveVessel.altitude, _defaultAltitude);
 
-                if (LaunchCountdownConfig.Instance.AbortExecuted)
+                if (LaunchCountdownConfig.Instance.Info.AbortExecuted)
                 {
                     var vesselParts = FlightGlobals.ActiveVessel.parts;
                     BaseAction.FireAction(vesselParts, KSPActionGroup.Abort, KSPActionType.Activate);
@@ -302,9 +303,22 @@ namespace LaunchCountDown.Common
 
         private bool RunStaging(int count)
         {
-            if (!LaunchCountdownConfig.Instance.Sequences.ContainsKey(FlightGlobals.ActiveVessel.vesselName) ||
-                !Regex.IsMatch(
-                    LaunchCountdownConfig.Instance.Sequences[FlightGlobals.ActiveVessel.vesselName][count], "^[0-9]+"))
+            string[] items;
+
+            var result = LaunchCountdownConfig.Instance.Info.Sequences.TryGetValue(FlightGlobals.ActiveVessel.id,
+                out items);
+
+            if (!result)
+            {
+                DebugHelper.WriteMessage("Current id is {0} with stage {1}", FlightGlobals.ActiveVessel.id, count);
+
+                LaunchCountdownConfig.Instance.Info.Sequences.Keys.ToList().ForEach(x => Debug.LogWarning(x));
+
+                return false;
+            }
+
+            
+            if (!Regex.IsMatch(items[count], "^[0-9]+"))
             {
                 DebugHelper.WriteMessage("Stage {0} not activated", count);
                 return false;
@@ -313,7 +327,7 @@ namespace LaunchCountDown.Common
             try
             {
                 Staging.ActivateStage(
-                    int.Parse(LaunchCountdownConfig.Instance.Sequences[FlightGlobals.ActiveVessel.vesselName][count]));
+                    int.Parse(LaunchCountdownConfig.Instance.Info.Sequences[FlightGlobals.ActiveVessel.id][count]));
                 DebugHelper.WriteMessage("Stage {0} activated", count);
                 return true;
             }

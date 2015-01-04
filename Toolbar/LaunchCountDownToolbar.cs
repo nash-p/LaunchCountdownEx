@@ -9,7 +9,7 @@ namespace LaunchCountDown.Toolbar
         private IButton _launchButton;
         private MonoBehaviourWindow _window;
 
-        public override void Awake()
+        protected override void Awake()
         {
             _window = GetComponent<MainWindow>();
 
@@ -37,7 +37,7 @@ namespace LaunchCountDown.Toolbar
             _launchButton.Enabled = flag;
         }
 
-        public override void OnDestroy()
+        protected override void OnDestroy()
         {
             if (!ToolbarManager.ToolbarAvailable) return;
             if (_launchButton == null) return;

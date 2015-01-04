@@ -1,4 +1,5 @@
-﻿using LaunchCountDown.Common;
+﻿using System;
+using LaunchCountDown.Common;
 using LaunchCountDown.Config;
 using PluginFramework;
 using UnityEngine;
@@ -8,26 +9,20 @@ namespace LaunchCountDown.Windows
     [WindowInitials(Caption = "", ClampToScreen = true, DragEnabled = true)]
     public class LaunchSequenceWindow : MonoBehaviorWindowExtended
     {
-        private string _vesselName;
+        private Guid _vesselId;
 
-        public override void Awake()
+        protected override void Start()
         {
-            GameEvents.onVesselCreate.Add(VesselCreated);
-            _vesselName = "default";
-        }
+            base.Start();
 
-        private void VesselCreated(Vessel data)
-        {
-            _vesselName = data.vesselName;
+            _vesselId = FlightGlobals.ActiveVessel.id;
 
-            DebugHelper.WriteMessage("Vessel created {0}", _vesselName);
+            DebugHelper.WriteMessage("Vessel created {0}", _vesselId);
 
-            if (!LaunchCountdownConfig.Instance.Sequences.ContainsKey(_vesselName))
+            if (!LaunchCountdownConfig.Instance.Info.Sequences.ContainsKey(_vesselId))
             {
-                LaunchCountdownConfig.Instance.Sequences.Add(_vesselName, new[] { string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty });
+                LaunchCountdownConfig.Instance.Info.Sequences.Add(_vesselId, new[] { string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty });
             }
-
-            GameEvents.onVesselCreate.Remove(VesselCreated);
         }
 
         public override void DrawWindow(int id)
@@ -36,13 +31,13 @@ namespace LaunchCountDown.Windows
 
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
-            GUILayout.Label(_vesselName, StyleFactory.LabelStyle);
+            //GUILayout.Label(_vesselId, StyleFactory.LabelStyle);
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
 
-            LaunchCountdownConfig.Instance.EngineControl = GUILayout.Toggle(LaunchCountdownConfig.Instance.EngineControl, "Engine control", StyleFactory.ToggleStyle);
+            LaunchCountdownConfig.Instance.Info.EngineControl = GUILayout.Toggle(LaunchCountdownConfig.Instance.Info.EngineControl, "Engine control", StyleFactory.ToggleStyle);
 
-            SendMessage("SetEngineControl", LaunchCountdownConfig.Instance.EngineControl);
+            SendMessage("SetEngineControl", LaunchCountdownConfig.Instance.Info.EngineControl);
 
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
@@ -63,13 +58,13 @@ namespace LaunchCountDown.Windows
 
                 int buff;
 
-                if (!int.TryParse(LaunchCountdownConfig.Instance.Sequences[_vesselName][i], out buff) || Staging.StageCount - 1 < buff || buff < 0)
+                if (!int.TryParse(LaunchCountdownConfig.Instance.Info.Sequences[_vesselId][i], out buff) || Staging.StageCount - 1 < buff || buff < 0)
                 {
-                    LaunchCountdownConfig.Instance.Sequences[_vesselName][i] = GUILayout.TextField(LaunchCountdownConfig.Instance.Sequences[_vesselName][i], StyleFactory.ErrorTextBoxStyle);
+                    LaunchCountdownConfig.Instance.Info.Sequences[_vesselId][i] = GUILayout.TextField(LaunchCountdownConfig.Instance.Info.Sequences[_vesselId][i], StyleFactory.ErrorTextBoxStyle);
                 }
                 else
                 {
-                    LaunchCountdownConfig.Instance.Sequences[_vesselName][i] = GUILayout.TextField(LaunchCountdownConfig.Instance.Sequences[_vesselName][i], StyleFactory.TextBoxStyle);
+                    LaunchCountdownConfig.Instance.Info.Sequences[_vesselId][i] = GUILayout.TextField(LaunchCountdownConfig.Instance.Info.Sequences[_vesselId][i], StyleFactory.TextBoxStyle);
                 }
 
                 GUILayout.FlexibleSpace();
@@ -92,12 +87,5 @@ namespace LaunchCountDown.Windows
             GUILayout.EndVertical();
         }
 
-
-        public override void OnDestroy()
-        {
-            GameEvents.onVesselCreate.Remove(VesselCreated);
-
-            base.OnDestroy();
-        }
     }
 }

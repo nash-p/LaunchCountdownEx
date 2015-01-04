@@ -7,7 +7,7 @@ namespace LaunchCountDown.Common
     {
         public static bool IsDebug
         {
-            get { return LaunchCountdownConfig.Instance.IsDebug; }
+            get { return LaunchCountdownConfig.Instance.Info.IsDebug; }
         }
 
         public static void WriteMessage(string message, params object[] info)

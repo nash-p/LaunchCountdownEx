@@ -8,6 +8,7 @@
         IsSoundEnabled,
         IsDebug,
         AbortExecuted,
-        Scale
+        Scale, 
+        Position
     }
 }

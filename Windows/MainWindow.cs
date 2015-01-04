@@ -24,7 +24,7 @@ namespace LaunchCountDown.Windows
 
         private Rect ScaleRect(Rect r)
         {
-            var factor = LaunchCountdownConfig.Instance.Scale;
+            var factor = LaunchCountdownConfig.Instance.Info.Scale;
             return new Rect(
                 r.xMin * factor,
                 r.yMin * factor,
@@ -136,7 +136,7 @@ namespace LaunchCountDown.Windows
             }
         }
 
-        public override void Awake()
+        protected override void Awake()
         {
             //toolbar
             if (ToolbarManager.ToolbarAvailable)
@@ -146,9 +146,9 @@ namespace LaunchCountDown.Windows
 
             Visible = !ToolbarManager.ToolbarAvailable;
 
-            if (LaunchCountdownConfig.Instance.Load())
+            if (LaunchCountdownConfig.Instance.Info.IsLoaded)
             {
-                WindowRect = LaunchCountdownConfig.Instance.WindowPosition;
+                WindowRect = LaunchCountdownConfig.Instance.Info.WindowPosition;
             }
             else
             {
@@ -171,13 +171,13 @@ namespace LaunchCountDown.Windows
             _launcher.OnVesselLaunched += _launcher_OnVesselLaunched;
             _launcher.OnVesselAborted += _launcher_OnVesselAborted;
 
-            LaunchCountdownConfig.Instance.OnChanged += Instance_OnChanged;
+            LaunchCountdownConfig.Instance.Info.OnChanged += Instance_OnChanged;
         }
 
         void Instance_OnChanged(object sender, ConfigEventArgs e)
         {
             if (e.Data != ConfigProperties.Scale) return;
-            StyleFactory.Scale = LaunchCountdownConfig.Instance.Scale;
+            StyleFactory.Scale = LaunchCountdownConfig.Instance.Info.Scale;
             StyleFactory.Reload();
             WindowStyle = StyleFactory.MainWindowStyle;
         }
@@ -192,7 +192,7 @@ namespace LaunchCountDown.Windows
         {
             Visible = false;
             _toolbarItem.SetEnable(false);
-            Destroy(this);
+            Destroy(this, 10f);
         }
 
         void _launcher_OnTick(object sender, LaunchEvenArgs e)
@@ -206,7 +206,7 @@ namespace LaunchCountDown.Windows
             Visible = true;
         }
 
-        public override void Update()
+        protected override void Update()
         {
             if (Visible)
             {
@@ -254,12 +254,12 @@ namespace LaunchCountDown.Windows
             _buttonOpened = false;
         }
 
-        public override void OnDestroy()
+        protected override void OnDestroy()
         {
-            LaunchCountdownConfig.Instance.WindowPosition = WindowRect;
-            LaunchCountdownConfig.Instance.Save();
+            LaunchCountdownConfig.Instance.Info.WindowPosition = WindowRect;
+            LaunchCountdownConfig.Instance.Info.Save();
 
-            LaunchCountdownConfig.Instance.OnChanged -= Instance_OnChanged;
+            LaunchCountdownConfig.Instance.Info.OnChanged -= Instance_OnChanged;
 
             _settingsWindow.OnClosed -= WindowOnClosed;
             _launchSequenceWindow.OnClosed -= WindowOnClosed;
