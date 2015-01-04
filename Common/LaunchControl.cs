@@ -152,14 +152,15 @@ namespace LaunchCountDown.Common
 
             DisableEngineControl();
 
+            if (LaunchCountdownConfig.Instance.Info.IsSoundEnabled)
+            {
+              StartCoroutine(PlayLaunchedSound());  
+            }
+
             if (OnVesselLaunched != null)
             {
                 OnVesselLaunched(this, EventArgs.Empty);
             }
-
-            if (!LaunchCountdownConfig.Instance.Info.IsSoundEnabled) return;
-
-            StartCoroutine(PlayLaunchedSound());
         }
 
         private IEnumerator PlayLaunchedSound()

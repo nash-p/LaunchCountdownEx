@@ -192,7 +192,7 @@ namespace LaunchCountDown.Windows
         {
             Visible = false;
             _toolbarItem.SetEnable(false);
-            Destroy(this, 10f);
+            Destroy(this);
         }
 
         void _launcher_OnTick(object sender, LaunchEvenArgs e)
