@@ -3,7 +3,6 @@ using System.Collections;
 using LaunchCountDown.Common;
 using LaunchCountDown.Config;
 using LaunchCountDown.Extensions;
-using LaunchCountDown.Toolbar;
 using PluginFramework;
 using UnityEngine;
 
@@ -20,7 +19,7 @@ namespace LaunchCountDown.Windows
         private SettingsWindow _settingsWindow;
         private LaunchSequenceWindow _launchSequenceWindow;
         private LaunchControl _launcher;
-        private LaunchCountDownToolbar _toolbarItem;
+        private ApplicationLauncherButton _launcherButton;
 
         private Rect ScaleRect(Rect r)
         {
@@ -138,13 +137,11 @@ namespace LaunchCountDown.Windows
 
         protected override void Awake()
         {
-            //toolbar
-            if (ToolbarManager.ToolbarAvailable)
-            {
-                _toolbarItem = AddComponent<LaunchCountDownToolbar>();
-            }
+            Visible = false;
 
-            Visible = !ToolbarManager.ToolbarAvailable;
+            _launcherButton = ApplicationLauncher.Instance.AddModApplication(() => Visible = true, () => Visible = false, () => { }, () => { },
+                () => { }, () => { }, ApplicationLauncher.AppScenes.FLIGHT,
+                GameDatabase.Instance.GetTexture("LaunchCountDownEx/Icons/launch_icon_normal", false));
 
             if (LaunchCountdownConfig.Instance.Info.IsLoaded)
             {
@@ -191,8 +188,8 @@ namespace LaunchCountDown.Windows
         void _launcher_OnVesselLaunched(object sender, EventArgs e)
         {
             Visible = false;
-            _toolbarItem.SetEnable(false);
-            Destroy(this);
+            _launcherButton.Disable(false);
+            _launcherButton.SetTexture(GameDatabase.Instance.GetTexture("LaunchCountDownEx/Icons/launch_icon_disabled", false));
         }
 
         void _launcher_OnTick(object sender, LaunchEvenArgs e)
@@ -267,6 +264,8 @@ namespace LaunchCountDown.Windows
             _launcher.OnTick -= _launcher_OnTick;
             _launcher.OnVesselLaunched -= _launcher_OnVesselLaunched;
             _launcher.OnVesselAborted -= _launcher_OnVesselAborted;
+
+            ApplicationLauncher.Instance.RemoveModApplication(_launcherButton);
 
             base.OnDestroy();
         }
