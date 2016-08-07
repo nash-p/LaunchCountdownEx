@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using KspHelper.Behavior;
 using LaunchCountDown.Common;
 using LaunchCountDown.Config;
-using PluginFramework;
 using UnityEngine;
 
 namespace LaunchCountDown.Windows
 {
-    [WindowInitials(Caption = "", ClampToScreen = true, DragEnabled = true)]
-    public class SettingsWindow : MonoBehaviorWindowExtended
+    public class SettingsWindow : KspBehavior
     {
         private int _audioSet;
         private List<string> _soundsList = new List<string>();
@@ -33,7 +32,7 @@ namespace LaunchCountDown.Windows
             }
         }
 
-        public override void DrawWindow(int id)
+        private void DrawWindow(int id)
         {
             GUILayout.BeginVertical(GUILayout.ExpandHeight(true));
 
@@ -75,7 +74,6 @@ namespace LaunchCountDown.Windows
                 {
                     _audioSet = _audioSet <= 0 ? _soundsList.Count - 1 : _audioSet - 1;
                     LaunchCountdownConfig.Instance.Info.SoundSet = _soundsList[_audioSet];
-                    DebugHelper.WriteMessage("Current sound {0}", _soundsList[_audioSet]);
                 }
 
                 GUILayout.FlexibleSpace();
@@ -88,7 +86,6 @@ namespace LaunchCountDown.Windows
                 {
                     _audioSet = _audioSet >= _soundsList.Count - 1 ? 0 : _audioSet + 1;
                     LaunchCountdownConfig.Instance.Info.SoundSet = _soundsList[_audioSet];
-                    DebugHelper.WriteMessage("Current sound {0}", _soundsList[_audioSet]);
                 }
 
                 GUILayout.FlexibleSpace();
@@ -111,5 +108,14 @@ namespace LaunchCountDown.Windows
 
             GUILayout.EndVertical();
         }
+
+        private void Close()
+        {
+            
+        }
+
+        public bool Visible { get; set; }
+
+        public Rect WindowRect { get; set; }
     }
 }

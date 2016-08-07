@@ -3,13 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using KspHelper.Behavior;
 using LaunchCountDown.Config;
-using PluginFramework;
 using UnityEngine;
 
 namespace LaunchCountDown.Common
 {
-    internal class LaunchControl : MonoBehaviourExtended
+    internal class LaunchControl : KspBehavior
     {
         private AudioSource _audioSource;
         private int _tick;
@@ -27,7 +27,7 @@ namespace LaunchCountDown.Common
 
             Load();
 
-            _audioSource = AddComponent<AudioSource>();
+            _audioSource = this.gameObject.AddComponent<AudioSource>();
             _audioSource.panLevel = 0;
             _audioSource.volume = GameSettings.VOICE_VOLUME;
         }
@@ -71,14 +71,10 @@ namespace LaunchCountDown.Common
             }
 
             _tick = CountDownClips.Count;
-
-            DebugHelper.WriteMessage("tick reload {0}", _tick);
         }
 
-        public override void RepeatingWorker()
+        private void RepeatingWorker()
         {
-            DebugHelper.WriteMessage("tick {0}", _tick);
-
             if (_tick <= 0)
             {
                 StopRepeatingWorker();
@@ -104,8 +100,6 @@ namespace LaunchCountDown.Common
             }
 
 
-            DebugHelper.WriteMessage("Sound played {0}", clip.name);
-
             _audioSource.Stop();
             _audioSource.clip = clip;
             _audioSource.Play();
@@ -122,13 +116,16 @@ namespace LaunchCountDown.Common
             StartRepeatingWorker(1);
         }
 
+        private void StartRepeatingWorker(int i)
+        {
+            //todo implement
+        }
+
         internal void Abort()
         {
             StopRepeatingWorker();
 
             DisableEngineControl();
-
-            DebugHelper.WriteMessage("Vessel aborted");
 
             _tick = CountDownClips.Any() ? CountDownClips.Count : 15;
 
@@ -144,11 +141,14 @@ namespace LaunchCountDown.Common
             _audioSource.Play();
         }
 
+        private void StopRepeatingWorker()
+        {
+            //todo implement
+        }
+
         internal void Launched()
         {
             LaunchCountdownConfig.Instance.Info.OnChanged -= ConfigChanged;
-
-            DebugHelper.WriteMessage("Vessel launched");
 
             DisableEngineControl();
 
@@ -211,7 +211,6 @@ namespace LaunchCountDown.Common
             // ReSharper disable once DelegateSubtraction
             FlightGlobals.ActiveVessel.OnFlyByWire -= OnFlyByWire;
             FlightGlobals.ActiveVessel.OnFlyByWire += OnFlyByWire;
-            DebugHelper.WriteMessage("Vessel control enabled");
         }
 
         private void OnFlyByWire(FlightCtrlState st)
@@ -268,8 +267,6 @@ namespace LaunchCountDown.Common
 
             if (FlightGlobals.ActiveVessel.verticalSpeed <= 0)
             {
-                DebugHelper.WriteMessage("Check Vessel aborted: {0} {1}", FlightGlobals.ActiveVessel.altitude, _defaultAltitude);
-
                 if (LaunchCountdownConfig.Instance.Info.AbortExecuted)
                 {
                     var vesselParts = FlightGlobals.ActiveVessel.parts;
@@ -280,15 +277,13 @@ namespace LaunchCountDown.Common
             }
             else
             {
-                DebugHelper.WriteMessage("Check Vessel launched: {0} {1}", FlightGlobals.ActiveVessel.altitude, _defaultAltitude);
-
                 try
                 {
                     Launched();
                 }
                 catch (Exception ex)
                 {
-                    DebugHelper.WriteMessage(ex.StackTrace);
+                    // ignored
                 }
             }
         }
@@ -299,7 +294,6 @@ namespace LaunchCountDown.Common
 
             // ReSharper disable once DelegateSubtraction
             FlightGlobals.ActiveVessel.OnFlyByWire -= OnFlyByWire;
-            DebugHelper.WriteMessage("Vessel control disabled");
         }
 
         private bool RunStaging(int count)
@@ -311,8 +305,6 @@ namespace LaunchCountDown.Common
 
             if (!result)
             {
-                DebugHelper.WriteMessage("Current id is {0} with stage {1}", FlightGlobals.ActiveVessel.id, count);
-
                 LaunchCountdownConfig.Instance.Info.Sequences.Keys.ToList().ForEach(x => Debug.LogWarning(x));
 
                 return false;
@@ -321,7 +313,6 @@ namespace LaunchCountDown.Common
             
             if (!Regex.IsMatch(items[count], "^[0-9]+"))
             {
-                DebugHelper.WriteMessage("Stage {0} not activated", count);
                 return false;
             }
 
@@ -329,12 +320,10 @@ namespace LaunchCountDown.Common
             {
                 Staging.ActivateStage(
                     int.Parse(LaunchCountdownConfig.Instance.Info.Sequences[FlightGlobals.ActiveVessel.id][count]));
-                DebugHelper.WriteMessage("Stage {0} activated", count);
                 return true;
             }
             catch (Exception ex)
             {
-                DebugHelper.WriteMessage("Staging sequence error {0}", ex.Message);
                 return false;
             }
         }
