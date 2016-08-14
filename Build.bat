@@ -3,7 +3,7 @@ rem params: 1 - solutiondir,2 - outdir
 del "%KspPath%GameData\LaunchCountDownEx\*.dll" /s /q /f
 del "%KspPath%GameData\LaunchCountDownEx\*.mdb" /s /q /f
 
-rem call "c:\Program Files (x86)\Unity\Editor\Data\MonoBleedingEdge\bin\cli.bat" "c:\Program Files (x86)\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.0\pdb2mdb.exe" "e:\Mods\LaunchCountdownEx\bin\Debug\LaunchCountDownEx.dll"
+call "c:\Program Files (x86)\Unity\Editor\Data\MonoBleedingEdge\bin\cli.bat" "c:\Program Files (x86)\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.0\pdb2mdb.exe" "e:\Mods\LaunchCountdownEx\bin\Debug\LaunchCountDownEx.dll"
 
 xcopy "%2*dll" "%KspPath%GameData\LaunchCountDownEx\Plugin\" /Y
 xcopy "%2*mdb" "%KspPath%GameData\LaunchCountDownEx\Plugin\" /Y

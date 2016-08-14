@@ -1,16 +1,15 @@
 ﻿using System;
-using KspHelper.Behavior;
 using LaunchCountDown.Common;
 using LaunchCountDown.Config;
+using PluginFramework;
 using UnityEngine;
 
 namespace LaunchCountDown.Windows
 {
-    public class LaunchSequenceWindow : KspBehavior
+    [WindowInitials(Caption = "", ClampToScreen = true, DragEnabled = true)]
+    public class LaunchSequenceWindow : MonoBehaviorWindowExtended
     {
         private Guid _vesselId;
-
-        public Rect WindowRect { get; set; }
 
         protected override void Start()
         {
@@ -18,13 +17,15 @@ namespace LaunchCountDown.Windows
 
             _vesselId = FlightGlobals.ActiveVessel.id;
 
+            DebugHelper.WriteMessage("Vessel created {0}", _vesselId);
+
             if (!LaunchCountdownConfig.Instance.Info.Sequences.ContainsKey(_vesselId))
             {
                 LaunchCountdownConfig.Instance.Info.Sequences.Add(_vesselId, new[] { string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty });
             }
         }
 
-        private void DrawWindow(int id)
+        public override void DrawWindow(int id)
         {
             GUILayout.BeginVertical();
 
@@ -86,11 +87,5 @@ namespace LaunchCountDown.Windows
             GUILayout.EndVertical();
         }
 
-        private void Close()
-        {
-            
-        }
-
-        public bool Visible { get; set; }
     }
 }
