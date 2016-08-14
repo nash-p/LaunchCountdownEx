@@ -4,12 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using LaunchCountDown.Config;
-using PluginFramework;
 using UnityEngine;
 
 namespace LaunchCountDown.Common
 {
-    internal class LaunchControl : MonoBehaviourExtended
+    internal class LaunchControl : MonoBehaviour
     {
         private AudioSource _audioSource;
         private int _tick;
@@ -18,7 +17,7 @@ namespace LaunchCountDown.Common
         internal List<AudioClip> CountDownClips { get; private set; }
         internal List<AudioClip> EventClips { get; private set; }
 
-        protected override void Awake()
+        protected void Awake()
         {
             CountDownClips = new List<AudioClip>();
             EventClips = new List<AudioClip>();
@@ -27,7 +26,7 @@ namespace LaunchCountDown.Common
 
             Load();
 
-            _audioSource = AddComponent<AudioSource>();
+            _audioSource = this.gameObject.AddComponent<AudioSource>();
             _audioSource.panLevel = 0;
             _audioSource.volume = GameSettings.VOICE_VOLUME;
         }
@@ -75,13 +74,13 @@ namespace LaunchCountDown.Common
             DebugHelper.WriteMessage("tick reload {0}", _tick);
         }
 
-        public override void RepeatingWorker()
+        public void RepeatingWorker()
         {
             DebugHelper.WriteMessage("tick {0}", _tick);
 
             if (_tick <= 0)
             {
-                StopRepeatingWorker();
+                //StopRepeatingWorker();
                 return;
             }
 
@@ -119,12 +118,12 @@ namespace LaunchCountDown.Common
             }
 
             CheckEngine();
-            StartRepeatingWorker(1);
+           // StartRepeatingWorker(1);
         }
 
         internal void Abort()
         {
-            StopRepeatingWorker();
+            //StopRepeatingWorker();
 
             DisableEngineControl();
 
@@ -182,14 +181,12 @@ namespace LaunchCountDown.Common
 
         internal event EventHandler OnVesselAborted;
 
-        protected override void OnDestroy()
+        protected void OnDestroy()
         {
             EventClips.Clear();
             CountDownClips.Clear();
 
             LaunchCountdownConfig.Instance.Info.OnChanged -= ConfigChanged;
-
-            base.OnDestroy();
         }
 
         private void CheckEngine()

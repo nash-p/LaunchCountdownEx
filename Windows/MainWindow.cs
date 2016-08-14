@@ -2,24 +2,24 @@
 using System.Collections;
 using LaunchCountDown.Common;
 using LaunchCountDown.Config;
-using LaunchCountDown.Extensions;
-using PluginFramework;
+using LaunchCountDown.States;
 using UnityEngine;
 
 namespace LaunchCountDown.Windows
 {
-    [KSPAddon(KSPAddon.Startup.Flight, false)]
-    [WindowInitials(Caption = "", ClampToScreen = true, DragEnabled = true, TooltipsEnabled = true)]
-    public class MainWindow : MonoBehaviourWindow
+    [KSPScenario(ScenarioCreationOptions.AddToAllGames, GameScenes.FLIGHT)]
+    public partial class MainWindow : ScenarioModule
     {
         private int _tick;
-        private LaunchStates _launchState;
-        private float _delta;
+        private LaunchStates _launchState = LaunchStates.Normal;
+        private float _delta = 0;
         private bool _buttonOpened;
-        private SettingsWindow _settingsWindow;
-        private LaunchSequenceWindow _launchSequenceWindow;
         private LaunchControl _launcher;
         private ApplicationLauncherButton _launcherButton;
+
+        private KerbalFSM _machine;
+        private string _stateName = "Init";
+
 
         private Rect ScaleRect(Rect r)
         {
@@ -32,9 +32,23 @@ namespace LaunchCountDown.Windows
                );
         }
 
-        public override void DrawWindow(int id)
+        private void DrawMainWindow(int id)
         {
             GUILayout.BeginHorizontal();
+
+            //GUILayout.FlexibleSpace();
+
+            //GUILayout.Label(GameDatabase.Instance.GetTexture("LaunchCountDownEx/Images/minus", false));
+            //GUILayout.Label(GameDatabase.Instance.GetTexture("LaunchCountDownEx/Images/Digit0", false));
+            //GUILayout.Label(GameDatabase.Instance.GetTexture("LaunchCountDownEx/Images/Digit0", false));
+            //GUILayout.Label(GameDatabase.Instance.GetTexture("LaunchCountDownEx/Images/colon", false));
+            //GUILayout.Label(GameDatabase.Instance.GetTexture("LaunchCountDownEx/Images/Digit0", false));
+            //GUILayout.Label(GameDatabase.Instance.GetTexture("LaunchCountDownEx/Images/Digit0", false));
+            //GUILayout.Label(GameDatabase.Instance.GetTexture("LaunchCountDownEx/Images/colon", false));
+            //GUILayout.Label(GameDatabase.Instance.GetTexture("LaunchCountDownEx/Images/Digit0", false));
+            //GUILayout.Label(GameDatabase.Instance.GetTexture("LaunchCountDownEx/Images/Digit0", false));
+
+            //GUILayout.FlexibleSpace();
 
             GUI.DrawTexture(ScaleRect(new Rect(13, 41, 25, 27)),
                 GameDatabase.Instance.GetTexture("LaunchCountDownEx/Images/minus", false));
@@ -59,26 +73,51 @@ namespace LaunchCountDown.Windows
 
             //seconds
             GUI.DrawTexture(ScaleRect(new Rect(342, 14, 54, 77)),
-                GameDatabase.Instance.GetTexture(string.Format("LaunchCountDownEx/Images/Digit{0}", firstDigit), false));
+                GameDatabase.Instance.GetTexture($"LaunchCountDownEx/Images/Digit{firstDigit}", false));
             GUI.DrawTexture(ScaleRect(new Rect(396, 14, 54, 77)),
-                GameDatabase.Instance.GetTexture(string.Format("LaunchCountDownEx/Images/Digit{0}", secondDigit), false));
+                GameDatabase.Instance.GetTexture($"LaunchCountDownEx/Images/Digit{secondDigit}", false));
 
             GUILayout.EndHorizontal();
+
+            GUI.DragWindow();
+
+            //if (Event.current.type == EventType.Repaint)
+            //{
+            //    if (this.WindowRect.Contains(new Vector3(Input.mousePosition.x, (float)Screen.height - Input.mousePosition.y, Input.mousePosition.z)))
+            //    {
+            //        if (_buttonOpened)
+            //        {
+            //            var openedRect = new Rect(WindowRect.xMin, WindowRect.yMin,
+            //                WindowRect.width, WindowRect.height + 29);
+            //            StartCoroutine(
+            //                openedRect.Contains(new Vector2(Input.mousePosition.x,
+            //                    Screen.height - Input.mousePosition.y))
+            //                    ? ShowBottomButton()
+            //                    : HideBottomButton());
+            //        }
+            //        else
+            //        {
+            //            StartCoroutine(
+            //                WindowRect.Contains(new Vector2(Input.mousePosition.x,
+            //                    Screen.height - Input.mousePosition.y))
+            //                    ? ShowBottomButton()
+            //                    : HideBottomButton());
+            //        }
+            //    }
+            //}
         }
 
-        public override void OnGUIEvery()
+        private void OnGUIEvery()
         {
-            if (!Visible) return;
-
-            var button_width = StyleFactory.ButtonLaunchStyle.fixedWidth;
-            var button_height = StyleFactory.ButtonLaunchStyle.fixedHeight;
+            var buttonWidth = StyleFactory.ButtonLaunchStyle.fixedWidth;
+            var buttonHeight = StyleFactory.ButtonLaunchStyle.fixedHeight;
 
 
             switch (_launchState)
             {
                 case LaunchStates.Normal:
                     //launch
-                    if (GUI.Button(new Rect(WindowRect.xMin, WindowRect.yMax - _delta, button_width, button_height),
+                    if (GUI.Button(new Rect(WindowRect.xMin, WindowRect.yMax - _delta, buttonWidth, buttonHeight),
                         string.Empty,
                         StyleFactory.ButtonLaunchStyle))
                     {
@@ -89,35 +128,35 @@ namespace LaunchCountDown.Windows
                     //sequence
                     if (
                         GUI.Button(
-                            new Rect(WindowRect.xMin + button_width, WindowRect.yMax - _delta, button_width, button_height),
+                            new Rect(WindowRect.xMin + buttonWidth, WindowRect.yMax - _delta, buttonWidth, buttonHeight),
                             string.Empty,
                             StyleFactory.ButtonSequenceStyle))
                     {
                         Visible = false;
-                        _launchSequenceWindow.WindowRect.x = WindowRect.x;
-                        _launchSequenceWindow.WindowRect.y = WindowRect.y;
-                        _launchSequenceWindow.Visible = true;
+                        //_launchSequenceWindow.WindowRect.x = WindowRect.x;
+                        //_launchSequenceWindow.WindowRect.y = WindowRect.y;
+                        //_launchSequenceWindow.Visible = true;
                         _launchState = LaunchStates.Sequence;
                     }
 
                     //settings
                     if (
                         GUI.Button(
-                            new Rect(WindowRect.xMin + button_width * 2, WindowRect.yMax - _delta, button_width, button_height),
+                            new Rect(WindowRect.xMin + buttonWidth * 2, WindowRect.yMax - _delta, buttonWidth, buttonHeight),
                             string.Empty,
                             StyleFactory.ButtonSettingsStyle))
                     {
                         Visible = false;
-                        _settingsWindow.WindowRect.x = WindowRect.x;
-                        _settingsWindow.WindowRect.y = WindowRect.y;
-                        _settingsWindow.Visible = true;
+                        //_settingsWindow.WindowRect.x = WindowRect.x;
+                        //_settingsWindow.WindowRect.y = WindowRect.y;
+                        //_settingsWindow.Visible = true;
                         _launchState = LaunchStates.Settings;
                     }
 
                     break;
                 case LaunchStates.Launch:
                     //abort
-                    if (GUI.Button(new Rect(WindowRect.xMin, WindowRect.yMax - _delta, button_width, button_height),
+                    if (GUI.Button(new Rect(WindowRect.xMin, WindowRect.yMax - _delta, buttonWidth, buttonHeight),
                         string.Empty,
                         StyleFactory.ButtonAbortStyle))
                     {
@@ -135,41 +174,64 @@ namespace LaunchCountDown.Windows
             }
         }
 
-        protected override void Awake()
+        public override void OnAwake()
         {
-            Visible = false;
+            Visible = true;
+
+            _machine = new KerbalFSM();
+
+            MachineInit();
 
             _launcherButton = ApplicationLauncher.Instance.AddModApplication(() => Visible = true, () => Visible = false, () => { }, () => { },
                 () => { }, () => { }, ApplicationLauncher.AppScenes.FLIGHT,
                 GameDatabase.Instance.GetTexture("LaunchCountDownEx/Icons/launch_icon_normal", false));
 
-            if (LaunchCountdownConfig.Instance.Info.IsLoaded)
-            {
-                WindowRect = LaunchCountdownConfig.Instance.Info.WindowPosition;
-            }
-            else
-            {
-                WindowRect = new Rect(0, 0, 459, 120);
-                WindowRect.CenterScreen();
-            }
+            WindowRect = LaunchCountdownConfig.Instance.Info.IsLoaded ? LaunchCountdownConfig.Instance.Info.WindowPosition : GUIUtil.ScreenCenteredRect(459, 120);
 
             WindowStyle = StyleFactory.MainWindowStyle;
 
-            _launchSequenceWindow = AddComponent<LaunchSequenceWindow>();
-            _launchSequenceWindow.WindowStyle = StyleFactory.LaunchSequenceStyle;
-            _launchSequenceWindow.OnClosed += WindowOnClosed;
+            //_launchSequenceWindow = AddComponent<LaunchSequenceWindow>();
+            //_launchSequenceWindow.WindowStyle = StyleFactory.LaunchSequenceStyle;
+            //_launchSequenceWindow.OnClosed += WindowOnClosed;
 
-            _settingsWindow = AddComponent<SettingsWindow>();
-            _settingsWindow.WindowStyle = StyleFactory.SettingsStyle;
-            _settingsWindow.OnClosed += WindowOnClosed;
+            //_settingsWindow = AddComponent<SettingsWindow>();
+            //_settingsWindow.WindowStyle = StyleFactory.SettingsStyle;
+            //_settingsWindow.OnClosed += WindowOnClosed;
 
-            _launcher = AddComponent<LaunchControl>();
-            _launcher.OnTick += _launcher_OnTick;
-            _launcher.OnVesselLaunched += _launcher_OnVesselLaunched;
-            _launcher.OnVesselAborted += _launcher_OnVesselAborted;
+            //_launcher = AddComponent<LaunchControl>();
+            //_launcher.OnTick += _launcher_OnTick;
+            //_launcher.OnVesselLaunched += _launcher_OnVesselLaunched;
+            //_launcher.OnVesselAborted += _launcher_OnVesselAborted;
 
-            LaunchCountdownConfig.Instance.Info.OnChanged += Instance_OnChanged;
+            //LaunchCountdownConfig.Instance.Info.OnChanged += Instance_OnChanged;
         }
+
+        private void MachineInit()
+        {
+            var initState = new KspGuiState("Init")
+            {
+                OnEnter = state => Visible = true,
+                Draw = () =>
+                {
+                    WindowRect = KSPUtil.ClampRectToScreen(GUI.Window(99, WindowRect, DrawMainWindow, "", StyleFactory.MainWindowStyle));
+
+                    OnGUIEvery();
+
+                    GUI.BringWindowToFront(99);
+                }
+            };
+
+
+            _machine.AddState(initState);
+
+            _machine.StartFSM(_stateName);
+        }
+
+        public GUIStyle WindowStyle { get; set; }
+
+        public Rect WindowRect { get; set; }
+
+        public bool Visible { get; set; }
 
         void Instance_OnChanged(object sender, ConfigEventArgs e)
         {
@@ -203,30 +265,42 @@ namespace LaunchCountDown.Windows
             Visible = true;
         }
 
-        protected override void Update()
+        public void OnGUI()
         {
-            if (Visible)
+            if (_machine.Started && Visible)
             {
-                if (_buttonOpened)
-                {
-                    var openedRect = new Rect(WindowRect.xMin, WindowRect.yMin,
-                        WindowRect.width, WindowRect.height + 29);
-                    StartCoroutine(
-                        openedRect.Contains(new Vector2(Input.mousePosition.x,
-                            Screen.height - Input.mousePosition.y))
-                            ? ShowBottomButton()
-                            : HideBottomButton());
-                }
-                else
-                {
-                    StartCoroutine(
-                        WindowRect.Contains(new Vector2(Input.mousePosition.x,
-                            Screen.height - Input.mousePosition.y))
-                            ? ShowBottomButton()
-                            : HideBottomButton());
-                }
+                (_machine.CurrentState as KspGuiState)?.Draw();
             }
 
+            var buttonWidth = StyleFactory.ButtonLaunchStyle.fixedWidth;
+            var buttonHeight = StyleFactory.ButtonLaunchStyle.fixedHeight;
+
+            GUI.Button(new Rect(10, 10, buttonWidth, buttonHeight), string.Empty, StyleFactory.ButtonLaunchStyle);
+        }
+
+        public void FixedUpdate()
+        {
+            if (_machine.Started)
+            {
+                _machine.FixedUpdateFSM();
+            }
+        }
+
+        public void LateUpdate()
+        {
+            if (_machine.Started)
+            {
+                _machine.LateUpdateFSM();
+            }
+        }
+
+
+        public void Update()
+        {
+            if (_machine.Started)
+            {
+                _machine.UpdateFSM();
+            }
         }
 
         private IEnumerator ShowBottomButton()
@@ -234,7 +308,7 @@ namespace LaunchCountDown.Windows
             while (_delta > 0)
             {
                 _delta--;
-                yield return null;
+                yield return new WaitForEndOfFrame();
             }
 
             _buttonOpened = true;
@@ -245,29 +319,27 @@ namespace LaunchCountDown.Windows
             while (_delta < 34)
             {
                 _delta++;
-                yield return null;
+                yield return new WaitForEndOfFrame();
             }
 
             _buttonOpened = false;
         }
 
-        protected override void OnDestroy()
+        public void OnDestroy()
         {
             LaunchCountdownConfig.Instance.Info.WindowPosition = WindowRect;
             LaunchCountdownConfig.Instance.Info.Save();
 
             LaunchCountdownConfig.Instance.Info.OnChanged -= Instance_OnChanged;
 
-            _settingsWindow.OnClosed -= WindowOnClosed;
-            _launchSequenceWindow.OnClosed -= WindowOnClosed;
+            //_settingsWindow.OnClosed -= WindowOnClosed;
+            //_launchSequenceWindow.OnClosed -= WindowOnClosed;
 
             _launcher.OnTick -= _launcher_OnTick;
             _launcher.OnVesselLaunched -= _launcher_OnVesselLaunched;
             _launcher.OnVesselAborted -= _launcher_OnVesselAborted;
 
             ApplicationLauncher.Instance.RemoveModApplication(_launcherButton);
-
-            base.OnDestroy();
         }
 
     }
