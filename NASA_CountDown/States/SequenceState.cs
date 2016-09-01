@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Linq;
+using KSP.UI;
+using KSP.UI.Screens;
 using NASA_CountDown.Config;
 using NASA_CountDown.Helpers;
 using NASA_CountDown.StateMachine;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace NASA_CountDown.States
 {
     public class SequenceState : BaseGuiState
     {
         private Rect _windowRect = GUIUtil.ScreenCenteredRect(270, 400);
-        private RaycastHit _raycastHit;
         private bool _isEditorState;
         private int _stageIndex;
 
@@ -22,26 +24,28 @@ namespace NASA_CountDown.States
                 {
                     ConfigInfo.Instance.Sequences.Add(FlightGlobals.ActiveVessel.id, Enumerable.Repeat(-1, 10).ToArray());
                 }
+
+                StageManager.Instance.Stages.ForEach(@group => group.Icons.ForEach(icon => icon.radioButton.onClick.AddListener(OnClickButton)));
             };
 
-            updateMode = KFSMUpdateMode.UPDATE;
-            OnUpdate = OnUpdateState;
+            OnLeave = state =>
+            {
+                StageManager.Instance.Stages.ForEach(@group => group.Icons.ForEach(icon => icon.radioButton.onClick.RemoveListener(OnClickButton)));
+            };
+
+            updateMode = KFSMUpdateMode.MANUAL_TRIGGER;
         }
 
-        private void OnUpdateState()
+        private void OnClickButton(PointerEventData arg0, UIRadioButton.State arg1, UIRadioButton.CallType arg2)
         {
             if (!_isEditorState) return;
 
-            if (Physics.Raycast(ScreenSafeUI.referenceCam.ScreenPointToRay(Input.mousePosition), out this._raycastHit, ScreenSafeUI.referenceCam.farClipPlane, 14336))
-            {
-                var mouseEvents = MouseEventsHandler.FindHandleUpwards(this._raycastHit.collider.gameObject) as StageGroup;
-                if (mouseEvents == null) return;
+            var stage = arg0.pointerPress.GetComponentInParent<StageGroup>();
 
-                if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
-                {
-                    ConfigInfo.Instance.Sequences[FlightGlobals.ActiveVessel.id][_stageIndex] = mouseEvents.InverseStageIndex;
-                    _isEditorState = false;
-                }
+            if (stage != null)
+            {
+                ConfigInfo.Instance.Sequences[FlightGlobals.ActiveVessel.id][_stageIndex] = stage.inverseStageIndex;
+                _isEditorState = false;
             }
         }
 

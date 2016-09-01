@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using NASA_CountDown.Config;
 using NASA_CountDown.Helpers;
@@ -21,15 +22,7 @@ namespace NASA_CountDown.States
 
         private void OnEnterToState(KFSMState kfsmState)
         {
-            _soundsList =
-                GameDatabase.Instance.databaseAudio.Where(x => x.name.StartsWith("NASA_Countdown"))
-                    .Select(x => x.name)
-                    .ToList();
-
-            if (_soundsList.Any())
-            {
-                _soundsList = _soundsList.Select(x => x.Split('/')).Select(m => m[2]).Distinct().ToList();
-            }
+            _soundsList = ConfigInfo.Instance.AudioSets.Keys.ToList();
         }
 
         protected override void OnGui()
@@ -52,7 +45,9 @@ namespace NASA_CountDown.States
 
             ConfigInfo.Instance.Scale = GUILayout.HorizontalSlider(ConfigInfo.Instance.Scale, .2f, 1f, GUILayout.MaxWidth(160f), GUILayout.MinWidth(140f));
 
-            ConfigInfo.Instance.IsSoundEnabled = GUILayout.Toggle(ConfigInfo.Instance.IsSoundEnabled, "Sound enabled", StyleFactory.ToggleStyle);
+            GUI.enabled = _soundsList.Any();
+
+            ConfigInfo.Instance.IsSoundEnabled = _soundsList.Any() && GUILayout.Toggle(ConfigInfo.Instance.IsSoundEnabled, "Sound enabled", StyleFactory.ToggleStyle);
 
             if (_soundsList.Any())
             {
@@ -94,6 +89,8 @@ namespace NASA_CountDown.States
 
                 GUILayout.EndVertical();
             }
+
+            GUI.enabled = true;
 
             if (
                 GUI.Button(

@@ -2,8 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Threading;
+using KSP.UI.Screens;
 using NASA_CountDown.Config;
 using NASA_CountDown.Helpers;
 using NASA_CountDown.StateMachine;
@@ -13,12 +12,8 @@ namespace NASA_CountDown.States
 {
     public class LaunchState : InitialState
     {
-        private List<AudioClip> _timer = new List<AudioClip>();
-        private List<AudioClip> _events = new List<AudioClip>();
         private AudioSource _audioSource;
         private List<Action> _stages;
-
-        private const string AbortedSoundName = "Aborted";
 
         public LaunchState(string name, KerbalFsmEx machine) : base(name, machine) { }
 
@@ -27,7 +22,7 @@ namespace NASA_CountDown.States
             base.OnEnterToState(kfsmState);
 
             _audioSource = _obj.AddComponent<AudioSource>();
-            _audioSource.panLevel = 0;
+            _audioSource.spatialBlend = 0;
             _audioSource.volume = GameSettings.VOICE_VOLUME;
 
             if (ConfigInfo.Instance.EngineControl)
@@ -35,11 +30,9 @@ namespace NASA_CountDown.States
                 FlightGlobals.ActiveVessel.OnFlyByWire = (FlightInputCallback)Delegate.Combine(FlightGlobals.ActiveVessel.OnFlyByWire, (FlightInputCallback)OnFlyByWire);
             }
 
-            LoadSounds();
-
             GameEvents.onVesselSituationChange.Add(SituationChanged);
 
-            _stages = ConfigInfo.Instance.Sequences[FlightGlobals.ActiveVessel.id].Select(x => x < 0 ? new Action(() => { }) : new Action(() => Staging.ActivateStage(x))).ToList();
+            _stages = ConfigInfo.Instance.Sequences[FlightGlobals.ActiveVessel.id].Select(x => x < 0 ? new Action(() => { }) : new Action(() => StageManager.ActivateStage(x))).ToList();
 
             _dummy.StartCoroutine(this.TickLaunch());
         }
@@ -49,18 +42,6 @@ namespace NASA_CountDown.States
             base.OnLeaveFromState(kfsmState);
             FlightGlobals.ActiveVessel.OnFlyByWire = (FlightInputCallback)Delegate.Remove(FlightGlobals.ActiveVessel.OnFlyByWire, (FlightInputCallback)OnFlyByWire);
             GameEvents.onVesselSituationChange.Remove(SituationChanged);
-        }
-
-        private void LoadSounds()
-        {
-            if (string.IsNullOrEmpty(ConfigInfo.Instance.SoundSet)) return;
-
-            var clips =
-                GameDatabase.Instance.databaseAudio.Where(
-                    x => x.name.StartsWith("NASA_Countdown") && x.name.Contains(ConfigInfo.Instance.SoundSet)).ToList();
-
-            _timer = clips.Where(x => x.name.Contains("/Timer")).ToList();
-            _events = clips.Where(x => x.name.Contains("/Events")).ToList();
         }
 
         protected override void DrawButtons()
@@ -78,7 +59,7 @@ namespace NASA_CountDown.States
         private IEnumerator Abort()
         {
             TimeWarp.SetRate(0, false);
-            var clip = _events.FirstOrDefault(x => x.name.EndsWith(AbortedSoundName));
+            var clip = ConfigInfo.Instance.CurrentAudio.Abort;
 
             if (clip != null)
             {
@@ -96,12 +77,13 @@ namespace NASA_CountDown.States
 
         private IEnumerator TickLaunch()
         {
-            var count = ConfigInfo.Instance.IsSoundEnabled && _timer.Any() ? _timer.Count - 1 : 15;
+            var count = ConfigInfo.Instance.IsSoundEnabled && ConfigInfo.Instance.CurrentAudio.TimerSounds.Any() ? ConfigInfo.Instance.CurrentAudio.TimerSounds.Count - 1 : 15;
 
             for (var i = count; i >= 0; i--)
             {
                 _tick = i;
-                _audioSource.PlayOneShot(_timer.FirstOrDefault(x => x.name.EndsWith($"/{i}")));
+
+                _audioSource.PlayOneShot(ConfigInfo.Instance.CurrentAudio.TimerSounds.FirstOrDefault(x => x.name.EndsWith($"/{i}")));
 
                 if (_stages.Count > i)
                 {

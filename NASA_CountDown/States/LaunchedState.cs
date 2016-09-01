@@ -9,13 +9,8 @@ using UnityEngine;
 
 namespace NASA_CountDown.States
 {
-    public class LaunchedState: BaseGuiState
+    public class LaunchedState : BaseGuiState
     {
-        private List<AudioClip> _events = new List<AudioClip>();
-        private const string LiftOffSoundName = "LiftOff";
-        private const string TowerClearedSoundName = "TowerCleared";
-        private const string AllEngineRunnigSoundName = "AllEngineRuning";
-
         private AudioSource _audioSource;
         private GameObject _obj;
 
@@ -35,24 +30,18 @@ namespace NASA_CountDown.States
         {
             _obj = new GameObject();
             _audioSource = _obj.AddComponent<AudioSource>();
-            _audioSource.panLevel = 0;
+            _audioSource.spatialBlend = 0;
             _audioSource.volume = GameSettings.VOICE_VOLUME;
 
 
-            if (string.IsNullOrEmpty(ConfigInfo.Instance.SoundSet)) return;
-
-            var clips =
-                GameDatabase.Instance.databaseAudio.Where(
-                    x => x.name.StartsWith("NASA_Countdown") && x.name.Contains(ConfigInfo.Instance.SoundSet)).ToList();
-
-            _events = clips.Where(x => x.name.Contains("/Events")).ToList();
+            if (ConfigInfo.Instance.CurrentAudio == null) return;
 
             _obj.AddComponent<MonoBehaviour>().StartCoroutine(LaunchedSuccess());
         }
 
         private IEnumerator LaunchedSuccess()
         {
-            var clip = _events.FirstOrDefault(x => x.name.EndsWith(LiftOffSoundName));
+            var clip = ConfigInfo.Instance.CurrentAudio.LiftOff;
 
             if (clip != null)
             {
@@ -60,7 +49,7 @@ namespace NASA_CountDown.States
                 yield return new WaitForSeconds(clip.length);
             }
 
-            clip = _events.FirstOrDefault(x => x.name.EndsWith(AllEngineRunnigSoundName));
+            clip = ConfigInfo.Instance.CurrentAudio.AllEngineRunnig;
 
             if (clip != null)
             {
@@ -68,7 +57,7 @@ namespace NASA_CountDown.States
                 yield return new WaitForSeconds(clip.length);
             }
 
-            clip = _events.FirstOrDefault(x => x.name.EndsWith(TowerClearedSoundName));
+            clip = ConfigInfo.Instance.CurrentAudio.TowerCleared;
 
             if (clip != null)
             {

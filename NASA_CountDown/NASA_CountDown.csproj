@@ -16,7 +16,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\..\KSP_win_15_debug\GameData\NASA_Countdown\</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -30,12 +30,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Assembly-CSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\KSP_Libs.1.0.5\lib\net35\Assembly-CSharp.dll</HintPath>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>..\..\..\..\..\KSP_win\KSP_Data\Managed\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\KSP_Libs.1.0.5\lib\net35\Assembly-CSharp-firstpass.dll</HintPath>
+    <Reference Include="KSPUtil">
+      <HintPath>..\..\..\..\..\KSP_win\KSP_Data\Managed\KSPUtil.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
@@ -44,14 +44,19 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\KSP_Libs.1.0.5\lib\net35\UnityEngine.dll</HintPath>
+    <Reference Include="UnityEngine">
+      <HintPath>..\..\..\..\..\KSP_win\KSP_Data\Managed\UnityEngine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>..\..\..\..\..\KSP_win\KSP_Data\Managed\UnityEngine.UI.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CountDownMain.cs" />
     <Compile Include="Config\ConfigInfo.cs" />
+    <Compile Include="Helpers\AudioSet.cs" />
     <Compile Include="Helpers\DummyComponent.cs" />
     <Compile Include="Helpers\RectWrapper.cs" />
     <Compile Include="Helpers\StyleFactory.cs" />
@@ -66,7 +71,6 @@
     <Compile Include="States\SettingState.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
     <None Include="Sounds\Apollo\Events\Aborted.ogg" />
     <None Include="Sounds\Apollo\Events\AllEngineRuning.ogg" />
     <None Include="Sounds\Apollo\Events\LiftOff.ogg" />
@@ -431,7 +435,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>"c:\Program Files (x86)\Mono\bin\pdb2mdb.bat" $(TargetPath)</PostBuildEvent>
+    <PostBuildEvent>rem "c:\Program Files (x86)\Mono\bin\pdb2mdb.bat" $(TargetPath)</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

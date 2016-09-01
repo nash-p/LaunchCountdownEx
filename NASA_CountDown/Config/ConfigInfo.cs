@@ -36,6 +36,8 @@ namespace NASA_CountDown.Config
         {
             try
             {
+                LoadSounds();
+
                 if (node == null) throw new NullReferenceException("Node not exist");
 
                 if (node.HasValue("soundEnabled"))
@@ -91,6 +93,19 @@ namespace NASA_CountDown.Config
             }
         }
 
+        private void LoadSounds()
+        {
+            var soundsList =
+                GameDatabase.Instance.databaseAudio.Where(x => x.name.StartsWith("NASA_CountDown", StringComparison.OrdinalIgnoreCase))
+                    .Select(x => x.name)
+                    .ToList();
+
+            foreach (var name in soundsList.Select(x => x.Split('/')).Select(m => m[2]).Distinct())
+            {
+                AudioSets.Add(name, new AudioSet(name));
+            }
+        }
+
         public void Save(ConfigNode node)
         {
             node.AddValue("soundEnabled", IsSoundEnabled);
@@ -114,5 +129,9 @@ namespace NASA_CountDown.Config
                 seqNode.AddValue("stages", value);
             }
         }
+
+        public Dictionary<string, AudioSet> AudioSets { get; } = new Dictionary<string, AudioSet>();
+
+        public AudioSet CurrentAudio => AudioSets.ContainsKey(SoundSet) ? AudioSets[SoundSet] : null;
     }
 }
