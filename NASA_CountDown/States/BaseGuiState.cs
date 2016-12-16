@@ -1,8 +1,9 @@
-﻿using NASA_CountDown.StateMachine;
+﻿using NASA_CountDown.Common;
+using NASA_CountDown.StateMachine;
 
 namespace NASA_CountDown.States
 {
-    public abstract class BaseGuiState: KFSMState
+    public abstract class BaseGuiState: KFSMState, IGuiBehavior
     {
         protected KerbalFsmEx Machine;
 
@@ -11,11 +12,6 @@ namespace NASA_CountDown.States
             Machine = machine;
         }
 
-        protected virtual void OnGui() {}
-
-        public void OnGuiUpdate()
-        {
-            OnGui();
-        }
+        public abstract void Draw();
     }
 }
