@@ -4,6 +4,8 @@ using NASA_CountDown.Config;
 using NASA_CountDown.StateMachine;
 using NASA_CountDown.States;
 
+using UnityEngine;
+
 namespace NASA_CountDown
 {
     [KSPScenario(ScenarioCreationOptions.AddToAllGames, GameScenes.FLIGHT)]
@@ -14,22 +16,34 @@ namespace NASA_CountDown
 
         public override void OnAwake()
         {
+            Debug.Log("CountDownMain.OnAwake");
             _machine = new KerbalFsmEx();
+ 
             InitMachine();
+            //_machine.StartFSM("");
             _button = ApplicationLauncher.Instance.AddModApplication(() => _machine.RunEvent("Finish"),
                 () => _machine.RunEvent("Init"), () => { }, () => { }, () => { }, () => { },
                 ApplicationLauncher.AppScenes.FLIGHT,
                 GameDatabase.Instance.GetTexture("NASA_CountDown/Icons/launch_icon_normal", false));
         }
 
+
+        InitialState initial;
+        SettingState settings;
+        SequenceState sequence;
+        LaunchState launch;
+        LaunchedState launched;
+        KFSMState finish;
+
         private void InitMachine()
         {
-            var initial = new InitialState("Init", _machine);
-            var settings = new SettingState("Settings", _machine);
-            var sequence = new SequenceState("Sequence", _machine);
-            var launch = new LaunchState("Launch", _machine);
-            var launched = new LaunchedState("Launched", _machine);
-            var finish = new KFSMState("Finish");
+            Debug.Log("CountDownMain.InitMachine");
+             initial = new InitialState("Init", _machine);
+             settings = new SettingState("Settings", _machine);
+             sequence = new SequenceState("Sequence", _machine);
+             launch = new LaunchState("Launch", _machine);
+             launched = new LaunchedState("Launched", _machine);
+             finish = new KFSMState("Finish");
 
             var go2Finish = new KFSMEvent("Finish")
             {
@@ -68,8 +82,10 @@ namespace NASA_CountDown
 
         public override void OnLoad(ConfigNode node)
         {
+            Debug.Log("CountDownMainOnLoad");
             ConfigInfo.Instance.Load(node);
             _machine.StartFSM("Init");
+            _button.SetFalse();
         }
 
         public override void OnSave(ConfigNode node)
