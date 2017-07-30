@@ -12,10 +12,11 @@ namespace NASA_CountDown.States
         protected Rect _windowRect;
         protected int _tick = 0;
         protected float _delta;
-        private bool _buttonOpened;
+        private bool _buttonOpened = false;
         protected GameObject _obj;
 
         protected DummyComponent _dummy;
+
 
         public InitialState(string name, KerbalFsmEx machine) : base(name, machine)
         {
@@ -25,12 +26,16 @@ namespace NASA_CountDown.States
 
         protected virtual void OnLeaveFromState(KFSMState kfsmState)
         {
+            if (_dummy == null)
+                return;
             _dummy.StopAllCoroutines();
             _obj.DestroyGameObjectImmediate();
         }
 
         protected virtual void OnEnterToState(KFSMState kfsmState)
         {
+            if (FlightGlobals.ActiveVessel == null)
+                return;
             if (FlightGlobals.ActiveVessel.situation != Vessel.Situations.PRELAUNCH)
             {
                 Machine.RunEvent("Finish");
@@ -41,10 +46,13 @@ namespace NASA_CountDown.States
             StyleFactory.Scale = ConfigInfo.Instance.Scale;
             StyleFactory.Reload();
             _windowRect = ScaleRect(GUIUtil.ScreenCenteredRect(459, 120));
+
         }
 
         protected override void OnGui()
         {
+            if (_dummy == null)
+                return;
             _windowRect = KSPUtil.ClampRectToScreen(GUI.Window(99, _windowRect, DrawMainWindow, "", StyleFactory.MainWindowStyle));
 
             ConfigInfo.Instance.WindowPosition = _windowRect;

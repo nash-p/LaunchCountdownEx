@@ -26,9 +26,7 @@ namespace NASA_CountDown.States
             _audioSource.volume = GameSettings.VOICE_VOLUME;
 
             if (ConfigInfo.Instance.EngineControl)
-            {
                 FlightGlobals.ActiveVessel.OnFlyByWire = (FlightInputCallback)Delegate.Combine(FlightGlobals.ActiveVessel.OnFlyByWire, (FlightInputCallback)OnFlyByWire);
-            }
 
             GameEvents.onVesselSituationChange.Add(SituationChanged);
 
@@ -40,7 +38,8 @@ namespace NASA_CountDown.States
         protected override void OnLeaveFromState(KFSMState kfsmState)
         {
             base.OnLeaveFromState(kfsmState);
-            FlightGlobals.ActiveVessel.OnFlyByWire = (FlightInputCallback)Delegate.Remove(FlightGlobals.ActiveVessel.OnFlyByWire, (FlightInputCallback)OnFlyByWire);
+            if (ConfigInfo.Instance.EngineControl)
+                FlightGlobals.ActiveVessel.OnFlyByWire = (FlightInputCallback)Delegate.Remove(FlightGlobals.ActiveVessel.OnFlyByWire, (FlightInputCallback)OnFlyByWire);
             GameEvents.onVesselSituationChange.Remove(SituationChanged);
         }
 
