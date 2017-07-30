@@ -1,4 +1,7 @@
+Updated source code available from:  https://github.com/linuxgurugamer/LaunchCountdownEx
+Now on Spacedock and CKAN
 
+=====================================================================================================
 
 Original thread: http://forum.kerbalspaceprogram.com/index.php?/topic/84692-nasa-countdown-v11b-113/
 NASA CountDown v.1.1 (For KSP 1.1.3)

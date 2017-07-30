@@ -11,7 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 		ChangeLog.txt = ChangeLog.txt
 		deploy.bat = deploy.bat
 		NASA_CountDown.version = NASA_CountDown.version
-		Readme.mb = Readme.mb
+		Readme.md = Readme.md
 	EndProjectSection
 EndProject
 Global
