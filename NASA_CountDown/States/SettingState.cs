@@ -25,12 +25,6 @@ namespace NASA_CountDown.States
             _soundsList = ConfigInfo.Instance.AudioSets.Keys.ToList();
         }
 
-        protected override void OnGui()
-        {
-            _windowRect = KSPUtil.ClampRectToScreen(GUILayout.Window(99, _windowRect, DrawSettingsWindow, "", StyleFactory.SettingsStyle));
-            GUI.BringWindowToFront(99);
-        }
-
         private void DrawSettingsWindow(int id)
         {
             GUILayout.BeginVertical(GUILayout.ExpandHeight(true));
@@ -39,7 +33,7 @@ namespace NASA_CountDown.States
 
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
-            GUILayout.Label($"Scale window {ConfigInfo.Instance.Scale.ToString("0.0")}", StyleFactory.LabelStyle);
+            GUILayout.Label($"Scale window {ConfigInfo.Instance.Scale:0.0}", StyleFactory.LabelStyle);
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
 
@@ -104,6 +98,12 @@ namespace NASA_CountDown.States
 
             GUILayout.EndVertical();
             GUI.DragWindow();
+        }
+
+        public override void Draw()
+        {
+            _windowRect = KSPUtil.ClampRectToScreen(GUILayout.Window(99, _windowRect, DrawSettingsWindow, "", StyleFactory.SettingsStyle));
+            GUI.BringWindowToFront(99);
         }
     }
 }

@@ -43,13 +43,13 @@ namespace NASA_CountDown.States
 
             _obj = new GameObject("Helper");
             _dummy = _obj.AddComponent<DummyComponent>();
-            StyleFactory.Scale = ConfigInfo.Instance.Scale;
+            StyleFactory.Scale = ConfigInfo.Instance.Scale;  
             StyleFactory.Reload();
             _windowRect = ScaleRect(GUIUtil.ScreenCenteredRect(459, 120));
 
         }
 
-        protected override void OnGui()
+        public override void Draw()
         {
             if (_dummy == null)
                 return;

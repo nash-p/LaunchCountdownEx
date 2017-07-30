@@ -8,14 +8,6 @@ namespace NASA_CountDown.StateMachine
 {
     public class KerbalFsmEx: KerbalFSM
     {
-        public void GuiUpdate()
-        {
-            if (!Started) return;
-
-            var state = this.CurrentState as BaseGuiState;
-            state?.OnGuiUpdate();
-        }
-
         public void RunEvent(string eName)
         {
             Debug.Log("NASA_CountDown.RunEvent: " + eName);

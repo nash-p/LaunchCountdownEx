@@ -30,11 +30,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+
     <Compile Include="AssemblyVersion.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>AssemblyVersion.tt</DependentUpon>
     </Compile>
+
     <Compile Include="CountDownMain.cs" />
     <Compile Include="Config\ConfigInfo.cs" />
     <Compile Include="Helpers\AudioSet.cs" />
@@ -52,6 +54,7 @@
     <Compile Include="States\SettingState.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="Sounds\Apollo\Events\Aborted.ogg" />
     <None Include="Sounds\Apollo\Events\AllEngineRuning.ogg" />
     <None Include="Sounds\Apollo\Events\LiftOff.ogg" />
@@ -440,6 +443,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
+
     <PostBuildEvent>
 start /D D:\Users\jbb\github\LaunchCountdownEx /WAIT deploy.bat  $(TargetDir) $(TargetFileName)
 
@@ -455,6 +459,7 @@ if %25textTemplatingPath%25=="\Microsoft Shared\TextTemplating\$(VisualStudioVer
 
 %25textTemplatingPath%25 "$(ProjectDir)AssemblyVersion.tt"
 </PreBuildEvent>
+
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

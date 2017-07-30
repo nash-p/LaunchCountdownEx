@@ -49,7 +49,7 @@ namespace NASA_CountDown.States
             }
         }
 
-        protected override void OnGui()
+        public override void Draw()
         {
             _windowRect = KSPUtil.ClampRectToScreen(GUI.Window(99, _windowRect, DrawSequenceWindow, "", StyleFactory.LaunchSequenceStyle));
             GUI.BringWindowToFront(99);

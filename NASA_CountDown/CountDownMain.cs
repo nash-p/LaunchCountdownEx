@@ -1,4 +1,5 @@
 ﻿using KSP.UI.Screens;
+using NASA_CountDown.Common;
 using NASA_CountDown.Config;
 using NASA_CountDown.StateMachine;
 using NASA_CountDown.States;
@@ -122,7 +123,10 @@ namespace NASA_CountDown
         {
             if (_machine.Started)
             {
-                _machine.GuiUpdate();
+                var state =_machine.CurrentState as IGuiBehavior;
+                if (state == null) return;
+
+                state.Draw();
             }
         }
 

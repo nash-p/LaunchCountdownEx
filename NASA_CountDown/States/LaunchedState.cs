@@ -67,5 +67,9 @@ namespace NASA_CountDown.States
 
             Machine.RunEvent("Finish");
         }
+
+        public override void Draw()
+        {
+        }
     }
 }
