@@ -9,7 +9,7 @@ namespace NASA_CountDown.States
 {
     public class InitialState : BaseGuiState
     {
-        protected Rect _windowRect;
+        public Rect _windowRect;
         protected int _tick = 0;
         protected float _delta;
         private bool _buttonOpened = false;
@@ -30,8 +30,11 @@ namespace NASA_CountDown.States
                 return;
             _dummy.StopAllCoroutines();
             _obj.DestroyGameObjectImmediate();
+           
+            FlightInputHandler.state.mainThrottle = HighLogic.CurrentGame.Parameters.CustomParams<NC>().defaultThrottle;
         }
 
+        bool initialPos = false;
         protected virtual void OnEnterToState(KFSMState kfsmState)
         {
             if (FlightGlobals.ActiveVessel == null)
@@ -43,41 +46,66 @@ namespace NASA_CountDown.States
 
             _obj = new GameObject("Helper");
             _dummy = _obj.AddComponent<DummyComponent>();
-            StyleFactory.Scale = ConfigInfo.Instance.Scale;  
+            StyleFactory.Scale = ConfigInfo.Instance.Scale;
             StyleFactory.Reload();
-            _windowRect = ScaleRect(GUIUtil.ScreenCenteredRect(459, 120));
 
+#if false
+            if (!initialPos)
+            {
+                initialPos = true;
+                _windowRect = ScaleRect(GUIUtil.ScreenCenteredRect(459, 120));
+            }
+#else
+            _windowRect = CountDownMain.saveLoadWinPos.initialWindow;
+            //    CountDownMain.saveLoadWinPos.initialWindow;
+            //if (!initialPos)
+            //{
+            //    initialPos = true;
+            //    _windowRect = ScaleRect(_windowRect);
+            //}
+#endif            
         }
 
         public override void Draw()
         {
             if (_dummy == null)
                 return;
+          
             _windowRect = KSPUtil.ClampRectToScreen(GUI.Window(99, _windowRect, DrawMainWindow, "", StyleFactory.MainWindowStyle));
 
             ConfigInfo.Instance.WindowPosition = _windowRect;
-
-            if (Event.current.type == EventType.Repaint)
+            if (!HighLogic.CurrentGame.Parameters.CustomParams<NC>().keepButtonsVisible)
             {
-                if (_buttonOpened)
+                if (Event.current.type == EventType.Repaint)
                 {
-                    var openedRect = new Rect(_windowRect.xMin, _windowRect.yMin,
-                        _windowRect.width, _windowRect.height + 29);
 
-                    _dummy.StartCoroutine(
-                        openedRect.Contains(new Vector2(Input.mousePosition.x,
-                            Screen.height - Input.mousePosition.y))
-                            ? ShowBottomButton()
-                            : HideBottomButton());
+                    if (_buttonOpened)
+                    {
+                        var openedRect = new Rect(_windowRect.xMin, _windowRect.yMin,
+                            _windowRect.width, _windowRect.height + 29);
+
+                        _dummy.StartCoroutine(
+                            openedRect.Contains(new Vector2(Input.mousePosition.x,
+                                Screen.height - Input.mousePosition.y))
+                                ? ShowBottomButton()
+                                : HideBottomButton());
+
+                    }
+                    else
+                    {
+                        _dummy.StartCoroutine(
+                            _windowRect.Contains(new Vector2(Input.mousePosition.x,
+                                Screen.height - Input.mousePosition.y))
+                                ? ShowBottomButton()
+                                : HideBottomButton());
+                    }
                 }
-                else
-                {
-                    _dummy.StartCoroutine(
-                        _windowRect.Contains(new Vector2(Input.mousePosition.x,
-                            Screen.height - Input.mousePosition.y))
-                            ? ShowBottomButton()
-                            : HideBottomButton());
-                }
+
+            }
+            else
+            {
+                _buttonOpened = true;
+                _delta = 0;
             }
 
             DrawButtons();
@@ -123,6 +151,8 @@ namespace NASA_CountDown.States
                 string.Empty,
                 StyleFactory.ButtonLaunchStyle))
             {
+                CountDownMain.saveLoadWinPos.initialWindow = CountDownMain.instance.initial._windowRect;
+                CountDownMain. saveLoadWinPos.SaveSettings();
                 Machine.RunEvent("Launch");
             }
 
@@ -133,6 +163,8 @@ namespace NASA_CountDown.States
                     string.Empty,
                     StyleFactory.ButtonSequenceStyle))
             {
+                CountDownMain.saveLoadWinPos.initialWindow = CountDownMain.instance.initial._windowRect;
+                CountDownMain.saveLoadWinPos.SaveSettings();
                 Machine.RunEvent("Sequence");
             }
 
@@ -143,6 +175,8 @@ namespace NASA_CountDown.States
                     string.Empty,
                     StyleFactory.ButtonSettingsStyle))
             {
+                CountDownMain.saveLoadWinPos.initialWindow = CountDownMain.instance.initial._windowRect;
+                CountDownMain.saveLoadWinPos.SaveSettings();
                 Machine.RunEvent("Settings");
             }
         }

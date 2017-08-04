@@ -95,6 +95,7 @@ namespace NASA_CountDown.States
 
         private void OnFlyByWire(FlightCtrlState st)
         {
+
             switch (_tick)
             {
                 case 7:
@@ -104,13 +105,15 @@ namespace NASA_CountDown.States
                 case 3:
                 case 2:
                 case 1:
-                    st.mainThrottle = 0.01f;
+                    st.mainThrottle = HighLogic.CurrentGame.Parameters.CustomParams<NC>().defaultInitialThrottle;
                     break;
                 case 0:
-                    st.mainThrottle = 1f;
+                    //st.mainThrottle = 1f;
+                    st.mainThrottle = HighLogic.CurrentGame.Parameters.CustomParams<NC>().defaultThrottle;
                     break;
                 default:
-                    st.mainThrottle = 0f;
+                    //st.mainThrottle = 0f;
+                    st.mainThrottle = HighLogic.CurrentGame.Parameters.CustomParams<NC>().defaultThrottle;
                     break;
             }
         }

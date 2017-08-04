@@ -12,12 +12,13 @@ namespace NASA_CountDown.States
 {
     public class SequenceState : BaseGuiState
     {
-        private Rect _windowRect = GUIUtil.ScreenCenteredRect(270, 400);
+        public Rect _windowRect = GUIUtil.ScreenCenteredRect(270, 400);
         private bool _isEditorState;
         private int _stageIndex;
 
         public SequenceState(string name, KerbalFsmEx machine) : base(name, machine)
         {
+            _windowRect = CountDownMain.saveLoadWinPos.sequenceWindow;
             OnEnter = state =>
             {
                 if (!ConfigInfo.Instance.Sequences.ContainsKey(FlightGlobals.ActiveVessel.id))

@@ -10,17 +10,15 @@ namespace NASA_CountDown.StateMachine
     {
         public void RunEvent(string eName)
         {
-            Debug.Log("NASA_CountDown.RunEvent: " + eName);
             var foundEvent =
                 this.CurrentState.StateEvents.FirstOrDefault(
                     x => x.name.Equals(eName, StringComparison.OrdinalIgnoreCase));
 
             if (foundEvent == null)
             {
-                Debug.Log("Event not found");
+                Log.Info("Event not found");
                 return;
             }
-            Debug.Log("running event: " + eName);
             this.RunEvent(foundEvent);
         }
     }

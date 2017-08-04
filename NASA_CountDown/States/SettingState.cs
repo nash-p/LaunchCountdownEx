@@ -10,13 +10,18 @@ namespace NASA_CountDown.States
 {
     public sealed class SettingState : BaseGuiState
     {
-        private Rect _windowRect;
+        public Rect _windowRect;
         private List<string> _soundsList;
         private int _audioSet;
 
+        public void InitSettingState()
+        {
+           
+        }
         public SettingState(string name, KerbalFsmEx machine) : base(name, machine)
         {
-            _windowRect = GUIUtil.ScreenCenteredRect(200, 290);
+            // _windowRect = GUIUtil.ScreenCenteredRect(200, 290);
+            _windowRect = CountDownMain.saveLoadWinPos.settingsWindow;
             OnEnter = OnEnterToState;
         }
 

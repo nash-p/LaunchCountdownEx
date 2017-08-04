@@ -11,24 +11,49 @@ namespace NASA_CountDown
     [KSPScenario(ScenarioCreationOptions.AddToAllGames, GameScenes.FLIGHT)]
     public class CountDownMain : ScenarioModule
     {
+        static public CountDownMain instance;
         private KerbalFsmEx _machine;
         private ApplicationLauncherButton _button;
-
+        public static SaveLoadWinPos saveLoadWinPos = new SaveLoadWinPos();
+        
         public override void OnAwake()
         {
-            Debug.Log("CountDownMain.OnAwake");
+            instance = this;
             _machine = new KerbalFsmEx();
- 
+
             InitMachine();
-            //_machine.StartFSM("");
-            _button = ApplicationLauncher.Instance.AddModApplication(() => _machine.RunEvent("Finish"),
-                () => _machine.RunEvent("Init"), () => { }, () => { }, () => { }, () => { },
+            
+            _button = ApplicationLauncher.Instance.AddModApplication(
+                //() => _machine.RunEvent("Finish"),
+               // () => _machine.RunEvent("Init"),
+               ToggleOn,
+               ToggleOff,
+                () => { }, () => { }, () => { }, () => { },
                 ApplicationLauncher.AppScenes.FLIGHT,
                 GameDatabase.Instance.GetTexture("NASA_CountDown/Icons/launch_icon_normal", false));
         }
+        void ToggleOn()
+        {
+            Log.Info("ToggleOn");
+            _machine.RunEvent("Finish");
 
+            saveLoadWinPos.LoadWindowPositions();
+            
+            saveLoadWinPos.initialWindow = initial._windowRect;
+            saveLoadWinPos.sequenceWindow = sequence._windowRect;
+            saveLoadWinPos.settingsWindow = settings._windowRect;
+            saveLoadWinPos.SaveSettings();
 
-        InitialState initial;
+        }
+        private void ToggleOff()
+        {
+            Log.Info("ToggleOff");
+            _machine.RunEvent("Init");
+
+            saveLoadWinPos.LoadWindowPositions();
+        }
+
+        public InitialState initial;
         SettingState settings;
         SequenceState sequence;
         LaunchState launch;
@@ -37,13 +62,18 @@ namespace NASA_CountDown
 
         private void InitMachine()
         {
-            Debug.Log("CountDownMain.InitMachine");
-             initial = new InitialState("Init", _machine);
-             settings = new SettingState("Settings", _machine);
-             sequence = new SequenceState("Sequence", _machine);
-             launch = new LaunchState("Launch", _machine);
-             launched = new LaunchedState("Launched", _machine);
-             finish = new KFSMState("Finish");
+            Log.Info("InitMachine");
+          //  if (saveLoadWinPos == null)
+           //     saveLoadWinPos = new SaveLoadWinPos();
+
+            initial = new InitialState("Init", _machine);
+            settings = new SettingState("Settings", _machine);
+            sequence = new SequenceState("Sequence", _machine);
+            launch = new LaunchState("Launch", _machine);
+            launched = new LaunchedState("Launched", _machine);
+            finish = new KFSMState("Finish");
+
+
 
             var go2Finish = new KFSMEvent("Finish")
             {
@@ -82,7 +112,6 @@ namespace NASA_CountDown
 
         public override void OnLoad(ConfigNode node)
         {
-            Debug.Log("CountDownMainOnLoad");
             ConfigInfo.Instance.Load(node);
             _machine.StartFSM("Init");
             _button.SetFalse();
@@ -123,7 +152,7 @@ namespace NASA_CountDown
         {
             if (_machine.Started)
             {
-                var state =_machine.CurrentState as IGuiBehavior;
+                var state = _machine.CurrentState as IGuiBehavior;
                 if (state == null) return;
 
                 state.Draw();
@@ -133,7 +162,8 @@ namespace NASA_CountDown
         public void OnDestroy()
         {
             _machine = null;
-            ApplicationLauncher.Instance.RemoveModApplication(_button);
+            if (_button != null)
+                ApplicationLauncher.Instance.RemoveModApplication(_button);
         }
 
         #endregion

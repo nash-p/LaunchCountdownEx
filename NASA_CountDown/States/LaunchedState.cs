@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using NASA_CountDown.Config;
+using NASA_CountDown.Helpers;
 using NASA_CountDown.StateMachine;
 using UnityEngine;
 
@@ -13,6 +11,7 @@ namespace NASA_CountDown.States
     {
         private AudioSource _audioSource;
         private GameObject _obj;
+        protected DummyComponent _dummy;
 
         public LaunchedState(string name, KerbalFsmEx machine) : base(name, machine)
         {
@@ -24,6 +23,7 @@ namespace NASA_CountDown.States
         private void OnLeaveFromState(KFSMState kfsmState)
         {
             _obj.DestroyGameObjectImmediate();
+            _dummy.StopAllCoroutines();
         }
 
         private void EnterState(KFSMState kfsmState)
@@ -33,10 +33,11 @@ namespace NASA_CountDown.States
             _audioSource.spatialBlend = 0;
             _audioSource.volume = GameSettings.VOICE_VOLUME;
 
-
             if (ConfigInfo.Instance.CurrentAudio == null) return;
-
-            _obj.AddComponent<MonoBehaviour>().StartCoroutine(LaunchedSuccess());
+            
+            //_obj.AddComponent<MonoBehaviour>().StartCoroutine(LaunchedSuccess());
+            _dummy = _obj.AddComponent<DummyComponent>();
+            _dummy.StartCoroutine(LaunchedSuccess());
         }
 
         private IEnumerator LaunchedSuccess()
