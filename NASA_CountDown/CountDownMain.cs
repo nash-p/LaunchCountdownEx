@@ -26,8 +26,9 @@ namespace NASA_CountDown
             _button = ApplicationLauncher.Instance.AddModApplication(
                 //() => _machine.RunEvent("Finish"),
                // () => _machine.RunEvent("Init"),
-               ToggleOn,
+             
                ToggleOff,
+                 ToggleOn,
                 () => { }, () => { }, () => { }, () => { },
                 ApplicationLauncher.AppScenes.FLIGHT,
                 GameDatabase.Instance.GetTexture("NASA_CountDown/Icons/launch_icon_normal", false));
