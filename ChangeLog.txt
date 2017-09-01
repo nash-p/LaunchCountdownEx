@@ -13,3 +13,16 @@
 		Added option to keep bottom buttons visible
 		Fixed issue with windows not staying in place.  Now window positions are saved 
 		Fixed version numbers in changelog (this file)
+
+1.3.2
+		Fixed problem with having to click 2x to start initially
+
+1.3.3
+		Fixed bug where if an asteroid was found during the countdown, the countdown would be interrupted.
+		Added option to turn on SAS at launch
+
+1.3.4
+		Added Hold button.  Pressing hold button will hold countdown at the end of the current audio sequence
+			Thanks to forum user @Three_Pounds for making the Hold/Resume button images
+		Exception when going to launch without going into both the Settings and Sound selection
+		Added Hold soundclips

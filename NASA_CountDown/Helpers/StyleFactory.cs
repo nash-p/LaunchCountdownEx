@@ -143,6 +143,26 @@ namespace NASA_CountDown.Helpers
                 },
             };
 
+            ButtonHoldStyle = new GUIStyle()
+            {
+                stretchWidth = true,
+                normal =
+                {
+                    background = GetTexture("ButtonHoldNormal")
+                },
+                hover =
+                {
+                    background = GetTexture("ButtonHoldHover")
+                },
+                onNormal =
+                {
+                    background = GetTexture("ButtonHoldPressed")
+                },
+                onHover =
+                {
+                    background = GetTexture("ButtonHoldPressed")
+                },
+            };
             ButtonBackStyle = new GUIStyle()
             {
                 normal =
@@ -183,6 +203,8 @@ namespace NASA_CountDown.Helpers
         public static GUIStyle ButtonSoundNextStyle { get; private set; }
 
         public static GUIStyle ButtonAbortStyle { get; private set; }
+
+        public static GUIStyle ButtonHoldStyle { get; private set; }
 
         public static GUIStyle ButtonBackStyle { get; private set; }
 

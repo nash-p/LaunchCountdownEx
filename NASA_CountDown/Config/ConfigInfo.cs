@@ -78,8 +78,15 @@ namespace NASA_CountDown.Config
                     Sequences.Clear();
 
                     foreach (var sequence in sequences)
+                    {         
+                            Sequences.Add(new Guid(sequence.GetValue("id")), sequence.GetValue("stages").Split(',').Select(int.Parse).ToArray());
+                    }
+                }
+                else
+                {
+                    if (FlightGlobals.ActiveVessel != null && !ConfigInfo.Instance.Sequences.ContainsKey(FlightGlobals.ActiveVessel.id))
                     {
-                        Sequences.Add(new Guid(sequence.GetValue("id")), sequence.GetValue("stages").Split(',').Select(int.Parse).ToArray());
+                        Sequences.Add(FlightGlobals.ActiveVessel.id, Enumerable.Repeat(-1, 10).ToArray());
                     }
                 }
 
@@ -102,7 +109,8 @@ namespace NASA_CountDown.Config
 
             foreach (var name in soundsList.Select(x => x.Split('/')).Select(m => m[2]).Distinct())
             {
-                AudioSets.Add(name, new AudioSet(name));
+                if (!AudioSets.ContainsKey(name))
+                    AudioSets.Add(name, new AudioSet(name));
             }
         }
 

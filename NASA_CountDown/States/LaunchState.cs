@@ -24,13 +24,18 @@ namespace NASA_CountDown.States
             _audioSource = _obj.AddComponent<AudioSource>();
             _audioSource.spatialBlend = 0;
             _audioSource.volume = GameSettings.VOICE_VOLUME;
-
+            
             if (ConfigInfo.Instance.EngineControl)
                 FlightGlobals.ActiveVessel.OnFlyByWire = (FlightInputCallback)Delegate.Combine(FlightGlobals.ActiveVessel.OnFlyByWire, (FlightInputCallback)OnFlyByWire);
 
             GameEvents.onVesselSituationChange.Add(SituationChanged);
 
+            if ( !ConfigInfo.Instance.Sequences.ContainsKey(FlightGlobals.ActiveVessel.id))
+            {
+                ConfigInfo.Instance.Sequences.Add(FlightGlobals.ActiveVessel.id, Enumerable.Repeat(-1, 10).ToArray());
+            }
             _stages = ConfigInfo.Instance.Sequences[FlightGlobals.ActiveVessel.id].Select(x => x < 0 ? new Action(() => { }) : new Action(() => StageManager.ActivateStage(x))).ToList();
+      
 
             _dummy.StartCoroutine(this.TickLaunch());
         }
@@ -43,6 +48,7 @@ namespace NASA_CountDown.States
             GameEvents.onVesselSituationChange.Remove(SituationChanged);
         }
 
+        bool hold = false;
         protected override void DrawButtons()
         {
             var buttonWidth = StyleFactory.ButtonLaunchStyle.fixedWidth;
@@ -53,13 +59,29 @@ namespace NASA_CountDown.States
                 _dummy.StopAllCoroutines();
                 _dummy.StartCoroutine(Abort());
             }
+            var b = paused;
+            paused = GUI.Toggle(new Rect(_windowRect.xMin + buttonWidth, _windowRect.yMax - _delta, buttonWidth, buttonHeight),
+                paused, "", StyleFactory.ButtonHoldStyle);
+            if (paused != b)
+            {
+                //paused = !paused;
+                if (paused && !holdPlayed)
+                {
+                    _dummy.StartCoroutine(Hold());
+                }
+                else
+                    if (!paused)
+                {
+                    holdPlayed = false;
+                }
+            }
         }
 
         private IEnumerator Abort()
         {
             TimeWarp.SetRate(0, false);
             var clip = ConfigInfo.Instance.CurrentAudio.Abort;
-
+            holdPlayed = true;
             if (clip != null)
             {
                 _audioSource.PlayOneShot(clip);
@@ -74,28 +96,63 @@ namespace NASA_CountDown.States
             Machine.RunEvent("Init");
         }
 
+        private IEnumerator Hold()
+        {
+            TimeWarp.SetRate(0, false);
+            while (_audioSource != null && _audioSource.isPlaying)
+                yield return new WaitForSeconds(0.1f);
+
+            var clip = ConfigInfo.Instance.CurrentAudio.Hold;
+
+            if (clip != null)
+            {
+                _audioSource.PlayOneShot(clip);
+                yield return new WaitForSeconds(clip.length);
+            }
+        }
+
+        double countdownStartTime;
+        static public bool paused = false;
+        static bool holdPlayed = false;
+
         private IEnumerator TickLaunch()
         {
-            var count = ConfigInfo.Instance.IsSoundEnabled && ConfigInfo.Instance.CurrentAudio.TimerSounds.Any() ? ConfigInfo.Instance.CurrentAudio.TimerSounds.Count - 1 : 15;
+            Log.Info("TickLaunch");
+            countdownStartTime = Planetarium.GetUniversalTime();
+            paused = false;
+            holdPlayed = false;
+            int count = 10;
+            if (ConfigInfo.Instance != null)
+            {
+                if (ConfigInfo.Instance.CurrentAudio != null)
+                    count = ConfigInfo.Instance.IsSoundEnabled && ConfigInfo.Instance.CurrentAudio.TimerSounds.Any() ? ConfigInfo.Instance.CurrentAudio.TimerSounds.Count - 1 : 15;
+            }
+
 
             for (var i = count; i >= 0; i--)
             {
+                while (paused)
+                    yield return new WaitForSeconds(1f);
+//                while (paused && (_audioSource == null || (_audioSource != null && !_audioSource.isPlaying)))
+//                        yield return new WaitForSeconds(1f);
                 _tick = i;
+                var oneShotStartTime = Planetarium.GetUniversalTime();
 
-                _audioSource.PlayOneShot(ConfigInfo.Instance.CurrentAudio.TimerSounds.FirstOrDefault(x => x.name.EndsWith($"/{i}")));
+                if (_audioSource != null && ConfigInfo.Instance != null && ConfigInfo.Instance.CurrentAudio != null)
+                    _audioSource.PlayOneShot(ConfigInfo.Instance.CurrentAudio.TimerSounds.FirstOrDefault(x => x.name.EndsWith($"/{i}")));
 
-                if (_stages.Count > i)
-                {
+                if (_stages != null && _stages.Count > i)
                     _stages[i]();
-                }
-
-                yield return new WaitForSeconds(1.0f);
+                var oneShotEndTime = Planetarium.GetUniversalTime();
+                Log.Info("tick: " + _tick.ToString() + ",  starttime/endtime: " + oneShotStartTime.ToString("n4") + "/" + oneShotEndTime.ToString("n4"));
+                var oneShotElapsedTime = oneShotEndTime - oneShotStartTime;
+                if (oneShotElapsedTime < 1.0f)
+                    yield return new WaitForSeconds(1.0f - (float)oneShotElapsedTime);
             }
         }
 
         private void OnFlyByWire(FlightCtrlState st)
         {
-
             switch (_tick)
             {
                 case 7:
@@ -110,6 +167,8 @@ namespace NASA_CountDown.States
                 case 0:
                     //st.mainThrottle = 1f;
                     st.mainThrottle = HighLogic.CurrentGame.Parameters.CustomParams<NC>().defaultThrottle;
+                    FlightGlobals.ActiveVessel.ActionGroups.SetGroup(KSPActionGroup.SAS, true);
+
                     break;
                 default:
                     //st.mainThrottle = 0f;
@@ -120,6 +179,10 @@ namespace NASA_CountDown.States
 
         private void SituationChanged(GameEvents.HostedFromToAction<Vessel, Vessel.Situations> data)
         {
+            if (data.host != FlightGlobals.ActiveVessel)
+                return;
+            Log.Info("situationChanged, to.vessel: " + data.host.ToString() + ",  situation: " + data.to.ToString());
+                
             switch (data.to)
             {
                 case Vessel.Situations.FLYING:

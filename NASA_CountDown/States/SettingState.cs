@@ -11,12 +11,13 @@ namespace NASA_CountDown.States
     public sealed class SettingState : BaseGuiState
     {
         public Rect _windowRect;
-        private List<string> _soundsList;
+        internal List<string> _soundsList;
         private int _audioSet;
 
-        public void InitSettingState()
+       
+        void InitSettingState()
         {
-           
+            _soundsList = ConfigInfo.Instance.AudioSets.Keys.ToList();
         }
         public SettingState(string name, KerbalFsmEx machine) : base(name, machine)
         {
@@ -27,7 +28,7 @@ namespace NASA_CountDown.States
 
         private void OnEnterToState(KFSMState kfsmState)
         {
-            _soundsList = ConfigInfo.Instance.AudioSets.Keys.ToList();
+            InitSettingState();
         }
 
         private void DrawSettingsWindow(int id)

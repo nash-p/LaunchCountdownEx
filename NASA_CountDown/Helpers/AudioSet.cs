@@ -15,6 +15,7 @@ namespace NASA_CountDown.Helpers
 
             TimerSounds = sounds.Where(x => x.name.Contains("/Timer")).ToList();
             Abort = sounds.FirstOrDefault(x => x.name.EndsWith("Aborted", StringComparison.OrdinalIgnoreCase));
+            Hold = sounds.FirstOrDefault(x => x.name.EndsWith("Hold", StringComparison.OrdinalIgnoreCase));
             LiftOff = sounds.FirstOrDefault(x => x.name.EndsWith("LiftOff", StringComparison.OrdinalIgnoreCase));
             AllEngineRunnig = sounds.FirstOrDefault(x => x.name.EndsWith("AllEngineRuning", StringComparison.OrdinalIgnoreCase));
             TowerCleared = sounds.FirstOrDefault(x => x.name.EndsWith("TowerCleared", StringComparison.OrdinalIgnoreCase));
@@ -25,6 +26,8 @@ namespace NASA_CountDown.Helpers
         public string Name { get; private set; }
 
         public AudioClip Abort { get; private set; }
+
+        public AudioClip Hold { get; private set; }
 
         public AudioClip LiftOff { get; private set; }
 

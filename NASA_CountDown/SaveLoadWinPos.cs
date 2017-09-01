@@ -148,7 +148,11 @@ namespace NASA_CountDown
 ;
             settingsFile = ConfigNode.Load(PLUGINDATA);
             if (settingsFile != null)
+            {
                 settings = settingsFile.GetNode(SETTINGSNAME);
+                
+                ConfigInfo.Instance.Load(settings);
+            }
 
             sequenceWindow = GetWinPos(settings, "sequenceWindow", SEQ_WIDTH, SEQ_HEIGHT, false);
             initialWindow = GetWinPos(settings, "initialWindow", CNT_WIDTH, CNT_HEIGHT);

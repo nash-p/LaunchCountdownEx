@@ -16,6 +16,7 @@ namespace NASA_CountDown.States
         private bool _isEditorState;
         private int _stageIndex;
 
+   
         public SequenceState(string name, KerbalFsmEx machine) : base(name, machine)
         {
             _windowRect = CountDownMain.saveLoadWinPos.sequenceWindow;

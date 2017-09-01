@@ -34,7 +34,7 @@ namespace NASA_CountDown.States
             FlightInputHandler.state.mainThrottle = HighLogic.CurrentGame.Parameters.CustomParams<NC>().defaultThrottle;
         }
 
-        bool initialPos = false;
+        //bool initialPos = false;
         protected virtual void OnEnterToState(KFSMState kfsmState)
         {
             if (FlightGlobals.ActiveVessel == null)
@@ -152,7 +152,8 @@ namespace NASA_CountDown.States
                 StyleFactory.ButtonLaunchStyle))
             {
                 CountDownMain.saveLoadWinPos.initialWindow = CountDownMain.instance.initial._windowRect;
-                CountDownMain. saveLoadWinPos.SaveSettings();
+                CountDownMain.saveLoadWinPos.SaveSettings();
+                
                 Machine.RunEvent("Launch");
             }
 

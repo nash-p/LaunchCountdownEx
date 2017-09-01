@@ -98,3 +98,4 @@ D:\Users\jbb\github\LaunchCountdownEx\NASA_CountDown\bin\Release\Mono.Security.d
 D:\Users\jbb\github\LaunchCountdownEx\NASA_CountDown\bin\Release\UnityEngine.xml
 D:\Users\jbb\github\LaunchCountdownEx\NASA_CountDown\obj\Release\NASA_CountDown.dll
 D:\Users\jbb\github\LaunchCountdownEx\NASA_CountDown\obj\Release\NASA_CountDown.pdb
+D:\Users\jbb\github\LaunchCountdownEx\NASA_CountDown\obj\Release\NASA_CountDown.csproj.CoreCompileInputs.cache

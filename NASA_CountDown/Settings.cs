@@ -49,6 +49,8 @@ namespace NASA_CountDown
             set { defaultThrottle = value / 100.0f; }
         }
 
+        [GameParameters.CustomParameterUI("Automatically enable SAS at launch")]
+        public bool enableSAS = true;      
 
 
         public override void SetDifficultyPreset(GameParameters.Preset preset)
