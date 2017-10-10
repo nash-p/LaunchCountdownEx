@@ -26,3 +26,6 @@
 			Thanks to forum user @Three_Pounds for making the Hold/Resume button images
 		Exception when going to launch without going into both the Settings and Sound selection
 		Added Hold soundclips
+
+1.3.5
+		Updated for KSP 1.3.1

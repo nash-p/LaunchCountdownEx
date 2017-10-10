@@ -3,7 +3,6 @@
 
 rem Set variables here
 
-set H=R:\KSP_1.3.0_dev
 set GAMEDIR=NASA_CountDown
 set LICENSE=license.txt
 set README=README.md
