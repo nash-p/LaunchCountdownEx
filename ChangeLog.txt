@@ -29,3 +29,7 @@
 
 1.3.5
 		Updated for KSP 1.3.1
+
+1.3.6
+		Added ability to trigger Gravity Turn to start launch
+		Added toggle to screen which shows if Gravity Turn is available

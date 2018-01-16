@@ -38,6 +38,7 @@
     <Compile Include="Common\IGuiBehavior.cs" />
     <Compile Include="CountDownMain.cs" />
     <Compile Include="Config\ConfigInfo.cs" />
+    <Compile Include="GravityTurn.cs" />
     <Compile Include="Helpers\AudioSet.cs" />
     <Compile Include="Helpers\DummyComponent.cs" />
     <Compile Include="Helpers\RectWrapper.cs" />

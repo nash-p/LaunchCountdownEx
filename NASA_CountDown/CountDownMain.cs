@@ -32,7 +32,14 @@ namespace NASA_CountDown
                 () => { }, () => { }, () => { }, () => { },
                 ApplicationLauncher.AppScenes.FLIGHT,
                 GameDatabase.Instance.GetTexture("NASA_CountDown/Icons/launch_icon_normal", false));
+            GravityTurnAPI.VerifyGTVersion();
         }
+#if false
+        void aAwake()
+        {
+            var b = Version.VerifyGTVersion();
+        }
+#endif
         void ToggleOn()
         {
             Log.Info("ToggleOn");
@@ -123,7 +130,7 @@ namespace NASA_CountDown
             ConfigInfo.Instance.Save(node);
         }
 
-        #region Unity
+#region Unity
 
         public void FixedUpdate()
         {
@@ -167,6 +174,6 @@ namespace NASA_CountDown
                 ApplicationLauncher.Instance.RemoveModApplication(_button);
         }
 
-        #endregion
+#endregion
     }
 }

@@ -166,6 +166,9 @@ namespace NASA_CountDown.States
                     break;
                 case 0:
                     //st.mainThrottle = 1f;
+                    if (GravityTurnAPI.Launch())  // If GravityTurn is available
+                        break;
+
                     st.mainThrottle = HighLogic.CurrentGame.Parameters.CustomParams<NC>().defaultThrottle;
                     FlightGlobals.ActiveVessel.ActionGroups.SetGroup(KSPActionGroup.SAS, true);
 

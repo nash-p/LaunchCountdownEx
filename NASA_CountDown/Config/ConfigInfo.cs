@@ -30,6 +30,8 @@ namespace NASA_CountDown.Config
 
         internal bool IsLoaded { get; private set; }
 
+        internal bool useGravityTurn { get; set; }  = false;
+
         internal static ConfigInfo Instance => _config ?? (_config = new ConfigInfo());
 
         public void Load(ConfigNode node)
