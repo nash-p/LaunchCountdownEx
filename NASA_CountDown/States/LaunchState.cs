@@ -44,7 +44,10 @@ namespace NASA_CountDown.States
         {
             base.OnLeaveFromState(kfsmState);
             if (ConfigInfo.Instance.EngineControl)
+            {
+                Log.Info("Removing OnFlyByWire");
                 FlightGlobals.ActiveVessel.OnFlyByWire = (FlightInputCallback)Delegate.Remove(FlightGlobals.ActiveVessel.OnFlyByWire, (FlightInputCallback)OnFlyByWire);
+            }
             GameEvents.onVesselSituationChange.Remove(SituationChanged);
         }
 
@@ -146,9 +149,13 @@ namespace NASA_CountDown.States
                 var oneShotEndTime = Planetarium.GetUniversalTime();
                 Log.Info("tick: " + _tick.ToString() + ",  starttime/endtime: " + oneShotStartTime.ToString("n4") + "/" + oneShotEndTime.ToString("n4"));
                 var oneShotElapsedTime = oneShotEndTime - oneShotStartTime;
-                if (oneShotElapsedTime < 1.0f)
+                if (oneShotElapsedTime < 1.0f && _tick > 0)
                     yield return new WaitForSeconds(1.0f - (float)oneShotElapsedTime);
+   
             }
+            Log.Info("final _tic: " + _tick);
+            GravityTurnAPI.Launch();
+            
         }
 
         private void OnFlyByWire(FlightCtrlState st)
@@ -166,6 +173,7 @@ namespace NASA_CountDown.States
                     break;
                 case 0:
                     //st.mainThrottle = 1f;
+                    Log.Info("OnFlyByWire, before GravityTurnAPI.Launch");
                     if (GravityTurnAPI.Launch())  // If GravityTurn is available
                         break;
 

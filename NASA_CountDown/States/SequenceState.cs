@@ -16,7 +16,7 @@ namespace NASA_CountDown.States
         private bool _isEditorState;
         private int _stageIndex;
 
-   
+
         public SequenceState(string name, KerbalFsmEx machine) : base(name, machine)
         {
             _windowRect = CountDownMain.saveLoadWinPos.sequenceWindow;
@@ -56,7 +56,7 @@ namespace NASA_CountDown.States
             _windowRect = KSPUtil.ClampRectToScreen(GUI.Window(99, _windowRect, DrawSequenceWindow, "", StyleFactory.LaunchSequenceStyle));
             GUI.BringWindowToFront(99);
         }
-     
+
         private void DrawSequenceWindow(int id)
         {
             GUILayout.BeginVertical();
@@ -64,6 +64,16 @@ namespace NASA_CountDown.States
 
             ConfigInfo.Instance.EngineControl = GUILayout.Toggle(ConfigInfo.Instance.EngineControl, "Engine control", StyleFactory.ToggleStyle);
 
+            if (GravityTurnAPI.VerifyGTVersion())
+            {
+                GUILayout.BeginHorizontal();
+                GUILayout.FlexibleSpace();
+                GUILayout.Label("Use Gravity Turn", StyleFactory.LabelStyle);
+                GUILayout.FlexibleSpace();
+                ConfigInfo.Instance.useGravityTurn = GUILayout.Toggle(ConfigInfo.Instance.useGravityTurn, "");
+                GUILayout.FlexibleSpace();
+                GUILayout.EndHorizontal();
+            }
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
             GUILayout.Label("Elapsed time", StyleFactory.LabelStyle);
@@ -72,53 +82,42 @@ namespace NASA_CountDown.States
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
 
-    
 
-            for (int i = -1; i < 10; i++)
+
+            for (int i = 0; i < 10; i++)
             {
-                if (i >= 0 || GravityTurnAPI.VerifyGTVersion())
+
+                GUILayout.BeginHorizontal();
+                GUILayout.FlexibleSpace();
+
+
+                GUILayout.Label($"{i + 1} second", StyleFactory.LabelStyle);
+                GUILayout.FlexibleSpace();
+                GUILayout.Label(ConfigInfo.Instance.Sequences[FlightGlobals.ActiveVessel.id][i] < 0 ? "none" : ConfigInfo.Instance.Sequences[FlightGlobals.ActiveVessel.id][i].ToString(), StyleFactory.LabelStyle, GUILayout.MinWidth(40));
+
+                bool flag = _isEditorState && i != _stageIndex;
+                string label = _isEditorState && i == _stageIndex ? "Done" : "Set";
+
+                GUI.enabled = !flag;
+
+                if (GUILayout.Button(label))
                 {
-                    GUILayout.BeginHorizontal();
-                    GUILayout.FlexibleSpace();     
-                        
-
-                    if (i >= 0)
-                    {
-                        GUILayout.Label($"{i + 1} second", StyleFactory.LabelStyle);
-                        GUILayout.FlexibleSpace();
-                        GUILayout.Label(ConfigInfo.Instance.Sequences[FlightGlobals.ActiveVessel.id][i] < 0 ? "none" : ConfigInfo.Instance.Sequences[FlightGlobals.ActiveVessel.id][i].ToString(), StyleFactory.LabelStyle, GUILayout.MinWidth(40));
-
-                        bool flag = _isEditorState && i != _stageIndex;
-                        string label = _isEditorState && i == _stageIndex ? "Done" : "Set";
-
-                        GUI.enabled = !flag;
-
-                        if (GUILayout.Button(label))
-                        {
-                            _isEditorState = !_isEditorState;
-                            _stageIndex = i;
-                        }
-                        GUI.enabled = true;
-
-                        if (GUILayout.Button("Clear"))
-                        {
-                            _isEditorState = false;
-                            _stageIndex = -1;
-                            ConfigInfo.Instance.Sequences[FlightGlobals.ActiveVessel.id][i] = -1;
-                        }
-                    }
-                    else
-                    {
-                        GUILayout.Label("Use Gravity Turn", StyleFactory.LabelStyle);
-                        GUILayout.FlexibleSpace();
-                        ConfigInfo.Instance.useGravityTurn = GUILayout.Toggle(ConfigInfo.Instance.useGravityTurn, "");
-                    }
-
-      
-
-                    GUILayout.FlexibleSpace();
-                    GUILayout.EndHorizontal();
+                    _isEditorState = !_isEditorState;
+                    _stageIndex = i;
                 }
+                GUI.enabled = true;
+
+                if (GUILayout.Button("Clear"))
+                {
+                    _isEditorState = false;
+                    _stageIndex = -1;
+                    ConfigInfo.Instance.Sequences[FlightGlobals.ActiveVessel.id][i] = -1;
+                }
+
+
+                GUILayout.FlexibleSpace();
+                GUILayout.EndHorizontal();
+
             }
 
             GUILayout.BeginHorizontal();

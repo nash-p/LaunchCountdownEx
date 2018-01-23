@@ -99,7 +99,7 @@ namespace NASA_CountDown
                 GravityTurnAssembly = GravityTurnAPI.VerifyAssemblyVersion("GravityTurn", minVersion);
                 GTAvailable = (GravityTurnAssembly != null);
             }
-            Log.Info("VerifyGTVersion, GTAvailable: " + GTAvailable);
+            //Log.Info("VerifyGTVersion, GTAvailable: " + GTAvailable);
             return GravityTurnAssembly != null;
         }
 
@@ -110,7 +110,7 @@ namespace NASA_CountDown
             {
                 return false;
             }
-
+            Log.Info("GravityTurn detected");
             try
             {
                 Type calledType = Type.GetType("GravityTurn.GravityTurner,GravityTurn");
@@ -123,6 +123,7 @@ namespace NASA_CountDown
 
                         if (myMethod != null)
                         {
+                            Log.Info("Invoking Launch");
                             myMethod.Invoke(GTRef, null);
                             return true;
                         }
