@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using NASA_CountDown.Config;
 
 // Thanks to nightingale for this file
 // Original file: A https://github.com/jrossignol/ContractConfigurator/blob/master/source/ContractConfigurator/Util/Version.cs#L29
@@ -106,7 +107,7 @@ namespace NASA_CountDown
         public static bool Launch()
         {
             Log.Info("Launch");
-            if (!GTAvailable)
+            if (!GTAvailable || !ConfigInfo.Instance.useGravityTurn)
             {
                 return false;
             }
@@ -152,6 +153,57 @@ namespace NASA_CountDown
                 return false;
             }
         }
+
+        public static bool Kill()
+        {
+            Log.Info("Kill");
+            if (!GTAvailable || !ConfigInfo.Instance.useGravityTurn)
+            {
+                return false;
+            }
+            Log.Info("GravityTurn detected");
+            try
+            {
+                Type calledType = Type.GetType("GravityTurn.GravityTurner,GravityTurn");
+                if (calledType != null)
+                {
+                    MonoBehaviour GTRef = (MonoBehaviour)UnityEngine.Object.FindObjectOfType(calledType); //assumes only one instance of class GravityTurn exists as this command returns first instance found, also must inherit MonoBehavior for this command to work. Getting a reference to your Historian object another way would work also.
+                    if (GTRef != null)
+                    {
+                        MethodInfo myMethod = calledType.GetMethod("Kill", BindingFlags.Instance | BindingFlags.Public);
+
+                        if (myMethod != null)
+                        {
+                            Log.Info("Invoking Kill");
+                            myMethod.Invoke(GTRef, null);
+                            return true;
+                        }
+                        else
+                        {
+                            Log.Info("Kill not available in GravityTurn");
+                            GTAvailable = false;
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        Log.Info("GTRef  failed");
+                        GTAvailable = false;
+                        return false;
+                    }
+                }
+                Log.Info("calledtype failed");
+                GTAvailable = false;
+                return false;
+            }
+            catch (Exception e)
+            {
+                Log.Info("Error calling type: " + e);
+                GTAvailable = false;
+                return false;
+            }
+        }
+
     }
 
 }
