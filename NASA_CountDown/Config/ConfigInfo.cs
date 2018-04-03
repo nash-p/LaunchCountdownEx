@@ -6,13 +6,13 @@ using UnityEngine;
 
 namespace NASA_CountDown.Config
 {
-    class ConfigInfo: IConfigNode
+    class ConfigInfo : IConfigNode
     {
         private readonly RectWrapper _wrapper = new RectWrapper();
 
         private static ConfigInfo _config;
 
-        private ConfigInfo(){}
+        private ConfigInfo() { }
 
         internal bool IsSoundEnabled { get; set; }
 
@@ -30,7 +30,7 @@ namespace NASA_CountDown.Config
 
         internal bool IsLoaded { get; private set; }
 
-        internal bool useGravityTurn { get; set; }  = false;
+        internal bool useGravityTurn { get; set; } = false;
 
         internal static ConfigInfo Instance => _config ?? (_config = new ConfigInfo());
 
@@ -80,8 +80,8 @@ namespace NASA_CountDown.Config
                     Sequences.Clear();
 
                     foreach (var sequence in sequences)
-                    {         
-                            Sequences.Add(new Guid(sequence.GetValue("id")), sequence.GetValue("stages").Split(',').Select(int.Parse).ToArray());
+                    {
+                        Sequences.Add(new Guid(sequence.GetValue("id")), sequence.GetValue("stages").Split(',').Select(int.Parse).ToArray());
                     }
                 }
                 else
@@ -142,6 +142,13 @@ namespace NASA_CountDown.Config
 
         public Dictionary<string, AudioSet> AudioSets { get; } = new Dictionary<string, AudioSet>();
 
-        public AudioSet CurrentAudio => AudioSets.ContainsKey(SoundSet) ? AudioSets[SoundSet] : null;
+        public AudioSet CurrentAudio  {
+            get
+            {
+                if (!ConfigInfo.Instance.IsSoundEnabled)
+                    return null;
+                return AudioSets.ContainsKey(SoundSet) ? AudioSets[SoundSet] : null;
+            }
+        }
     }
 }

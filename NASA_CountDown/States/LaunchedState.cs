@@ -17,6 +17,7 @@ namespace NASA_CountDown.States
 
         public LaunchedState(string name, KerbalFsmEx machine) : base(name, machine)
         {
+            Log.Info("LaunchedState");
             OnEnter = EnterState;
             OnLeave = OnLeaveFromState;
             updateMode = KFSMUpdateMode.MANUAL_TRIGGER;
@@ -24,19 +25,22 @@ namespace NASA_CountDown.States
 
         private void OnLeaveFromState(KFSMState kfsmState)
         {
+            Log.Info("OnLeaveFromState: LaunchedState");
             _obj.DestroyGameObjectImmediate();
             _dummy.StopAllCoroutines();
+     
         }
 
         private void EnterState(KFSMState kfsmState)
         {
+            Log.Info("EnterState: LaunchedState");
+            if (ConfigInfo.Instance.CurrentAudio == null) return;
+
             _obj = new GameObject();
             _audioSource = _obj.AddComponent<AudioSource>();
             _audioSource.spatialBlend = 0;
             _audioSource.volume = GameSettings.VOICE_VOLUME;
-
-            if (ConfigInfo.Instance.CurrentAudio == null) return;
-
+            
  
             //_obj.AddComponent<MonoBehaviour>().StartCoroutine(LaunchedSuccess());
             _dummy = _obj.AddComponent<DummyComponent>();
@@ -68,7 +72,7 @@ namespace NASA_CountDown.States
                 _audioSource.PlayOneShot(clip);
                 yield return new WaitForSeconds(clip.length);
             }
-
+            
             Machine.RunEvent("Finish");
         }
 

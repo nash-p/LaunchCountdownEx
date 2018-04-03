@@ -6,6 +6,9 @@ using NASA_CountDown.States;
 
 using UnityEngine;
 
+using ToolbarControl_NS;
+
+
 namespace NASA_CountDown
 {
     [KSPScenario(ScenarioCreationOptions.AddToAllGames, GameScenes.FLIGHT)]
@@ -13,16 +16,19 @@ namespace NASA_CountDown
     {
         static public CountDownMain instance;
         private KerbalFsmEx _machine;
-        private ApplicationLauncherButton _button;
+        //private ApplicationLauncherButton _button;
+        ToolbarControl toolbarControl;
         public static SaveLoadWinPos saveLoadWinPos = new SaveLoadWinPos();
         
         public override void OnAwake()
         {
             instance = this;
+
+            // Create the state machine
             _machine = new KerbalFsmEx();
 
             InitMachine();
-            
+#if false
             _button = ApplicationLauncher.Instance.AddModApplication(
                 //() => _machine.RunEvent("Finish"),
                // () => _machine.RunEvent("Init"),
@@ -32,7 +38,20 @@ namespace NASA_CountDown
                 () => { }, () => { }, () => { }, () => { },
                 ApplicationLauncher.AppScenes.FLIGHT,
                 GameDatabase.Instance.GetTexture("NASA_CountDown/Icons/launch_icon_normal", false));
+#endif
+            toolbarControl = gameObject.AddComponent<ToolbarControl>();
+            toolbarControl.AddToAllToolbars(ToggleOff,
+                 ToggleOn,
+                ApplicationLauncher.AppScenes.FLIGHT,
+                "Countdown_NS",
+                "countdownButton",
+                "NASA_CountDown/Icons/launch_icon_normal_38",
+                "NASA_CountDown/Icons/launch_icon_normal_24",
+                "NASA CountDown Clock"
+            );
+            //toolbarControl.UseBlizzy(HighLogic.CurrentGame.Parameters.CustomParams<FP>().useBlizzy);
             GravityTurnAPI.VerifyGTVersion();
+            
         }
 #if false
         void aAwake()
@@ -55,6 +74,11 @@ namespace NASA_CountDown
         }
         private void ToggleOff()
         {
+            if (GravityTurnAPI.GravityTurnActive)
+            {
+                Debug.Log("Toggleoff, GravityturnActive");
+                return;
+            }
             Log.Info("ToggleOff");
             _machine.RunEvent("Init");
 
@@ -74,6 +98,9 @@ namespace NASA_CountDown
           //  if (saveLoadWinPos == null)
            //     saveLoadWinPos = new SaveLoadWinPos();
 
+
+            // Create the states
+
             initial = new InitialState("Init", _machine);
             settings = new SettingState("Settings", _machine);
             sequence = new SequenceState("Sequence", _machine);
@@ -81,7 +108,7 @@ namespace NASA_CountDown
             launched = new LaunchedState("Launched", _machine);
             finish = new KFSMState("Finish");
 
-
+            // Add events to the states
 
             var go2Finish = new KFSMEvent("Finish")
             {
@@ -111,6 +138,8 @@ namespace NASA_CountDown
             initial.AddEvent(go2Finish);
             launched.AddEvent(go2Finish);
 
+            // Add states to the state  machine
+
             _machine.AddState(initial);
             _machine.AddState(settings);
             _machine.AddState(sequence);
@@ -120,9 +149,13 @@ namespace NASA_CountDown
 
         public override void OnLoad(ConfigNode node)
         {
+            Log.Info("OnLoad");
             ConfigInfo.Instance.Load(node);
             _machine.StartFSM("Init");
-            _button.SetFalse();
+            //_button.SetFalse();
+            if (toolbarControl != null)
+                toolbarControl.SetFalse(true);
+            
         }
 
         public override void OnSave(ConfigNode node)
@@ -158,6 +191,7 @@ namespace NASA_CountDown
 
         public void OnGUI()
         {
+            toolbarControl.UseBlizzy(false);
             if (_machine.Started)
             {
                 var state = _machine.CurrentState as IGuiBehavior;
@@ -165,13 +199,26 @@ namespace NASA_CountDown
 
                 state.Draw();
             }
+            else
+            {
+                if (GravityTurnAPI.GravityTurnActive)
+                    initial.Draw();
+
+            }
         }
 
         public void OnDestroy()
         {
             _machine = null;
+#if false
             if (_button != null)
                 ApplicationLauncher.Instance.RemoveModApplication(_button);
+#endif
+            if (toolbarControl != null)
+            {
+                toolbarControl.OnDestroy();
+                Destroy(toolbarControl);
+            }
         }
 
 #endregion

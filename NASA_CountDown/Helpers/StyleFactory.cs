@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using ToolbarControl_NS;
 
 namespace NASA_CountDown.Helpers
 {
@@ -13,6 +14,10 @@ namespace NASA_CountDown.Helpers
 
         public static void Reload()
         {
+            Log.Info("StyleFactory.Reload");
+            if (MainWindowStyle != null)
+                return;
+            Log.Info("StyleFactory.Reload executing");
             MainWindowStyle = new GUIStyle()
             {
                 fixedWidth = Mathf.RoundToInt(459f * Scale),
@@ -73,6 +78,8 @@ namespace NASA_CountDown.Helpers
 
             ButtonSequenceStyle = new GUIStyle(ButtonLaunchStyle)
             {
+                fixedWidth = Mathf.RoundToInt(153f * Scale),
+                fixedHeight = Mathf.RoundToInt(29f * Scale),
                 normal =
                 {
                     background = GetTexture("ButtonLaunchSeqNormal")
@@ -226,7 +233,10 @@ namespace NASA_CountDown.Helpers
 
         public static Texture2D GetTexture(string name)
         {
-            return GameDatabase.Instance.GetTexture($"NASA_Countdown/Images/{name}", false);
+            Texture2D tex = new Texture2D(2,2);           
+            bool b = ToolbarControl.LoadImageFromFile(ref tex, "GameData/NASA_Countdown/Images/" + name);
+            return tex;
+            //return GameDatabase.Instance.GetTexture($"NASA_Countdown/Images/{name}", false);
         }
     }
 }

@@ -8,6 +8,9 @@ using NASA_CountDown.StateMachine;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+using ClickThroughFix;
+
+
 namespace NASA_CountDown.States
 {
     public class SequenceState : BaseGuiState
@@ -53,7 +56,7 @@ namespace NASA_CountDown.States
 
         public override void Draw()
         {
-            _windowRect = KSPUtil.ClampRectToScreen(GUI.Window(99, _windowRect, DrawSequenceWindow, "", StyleFactory.LaunchSequenceStyle));
+            _windowRect = KSPUtil.ClampRectToScreen(ClickThruBlocker.GUIWindow(99, _windowRect, DrawSequenceWindow, "", StyleFactory.LaunchSequenceStyle));
             GUI.BringWindowToFront(99);
         }
 

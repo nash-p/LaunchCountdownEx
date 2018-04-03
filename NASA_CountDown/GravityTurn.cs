@@ -21,6 +21,8 @@ namespace NASA_CountDown
     {
         public static Assembly GravityTurnAssembly;
 
+        public static bool GravityTurnActive = false;
+
         /// <summary>
         /// Verify the loaded assembly meets a minimum version number.
         /// </summary>
@@ -126,6 +128,7 @@ namespace NASA_CountDown
                         {
                             Log.Info("Invoking Launch");
                             myMethod.Invoke(GTRef, null);
+                            GravityTurnActive = true;
                             return true;
                         }
                         else

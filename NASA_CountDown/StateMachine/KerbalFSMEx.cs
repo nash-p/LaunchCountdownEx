@@ -16,7 +16,7 @@ namespace NASA_CountDown.StateMachine
 
             if (foundEvent == null)
             {
-                Log.Info("Event not found");
+                Log.Error("Event not found: " + eName);
                 return;
             }
             this.RunEvent(foundEvent);

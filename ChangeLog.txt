@@ -1,3 +1,11 @@
+1.3.6.4
+	Updated for KSP 1.4.1+
+	Added ToolbarController support
+	Added ClickThroughBlocker support
+
+1.3.6.3
+	Fixed issue where sound were always being played even if they were disabled
+
 1.3.6.2
 	Fix bug where GT was always being called if it was there
 

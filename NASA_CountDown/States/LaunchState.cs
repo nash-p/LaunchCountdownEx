@@ -19,6 +19,7 @@ namespace NASA_CountDown.States
 
         protected override void OnEnterToState(KFSMState kfsmState)
         {
+            Log.Info("OnEnterToState: LaunchState");
             base.OnEnterToState(kfsmState);
 
             _audioSource = _obj.AddComponent<AudioSource>();
@@ -42,6 +43,7 @@ namespace NASA_CountDown.States
 
         protected override void OnLeaveFromState(KFSMState kfsmState)
         {
+            Log.Info("OnLeaveFromState: LaunchState");
             base.OnLeaveFromState(kfsmState);
             if (ConfigInfo.Instance.EngineControl)
             {
@@ -51,7 +53,7 @@ namespace NASA_CountDown.States
             GameEvents.onVesselSituationChange.Remove(SituationChanged);
         }
 
-        bool hold = false;
+        //bool hold = false;
         protected override void DrawButtons()
         {
             var buttonWidth = StyleFactory.ButtonLaunchStyle.fixedWidth;
@@ -62,20 +64,23 @@ namespace NASA_CountDown.States
                 _dummy.StopAllCoroutines();
                 _dummy.StartCoroutine(Abort());
             }
-            var b = paused;
-            paused = GUI.Toggle(new Rect(_windowRect.xMin + buttonWidth, _windowRect.yMax - _delta, buttonWidth, buttonHeight),
-                paused, "", StyleFactory.ButtonHoldStyle);
-            if (paused != b)
+            if (!GravityTurnAPI.GravityTurnActive)
             {
-                //paused = !paused;
-                if (paused && !holdPlayed)
+                var b = paused;
+                paused = GUI.Toggle(new Rect(_windowRect.xMin + buttonWidth, _windowRect.yMax - _delta, buttonWidth, buttonHeight),
+                    paused, "", StyleFactory.ButtonHoldStyle);
+                if (paused != b)
                 {
-                    _dummy.StartCoroutine(Hold());
-                }
-                else
-                    if (!paused)
-                {
-                    holdPlayed = false;
+                    //paused = !paused;
+                    if (paused && !holdPlayed)
+                    {
+                        _dummy.StartCoroutine(Hold());
+                    }
+                    else
+                        if (!paused)
+                    {
+                        holdPlayed = false;
+                    }
                 }
             }
         }
@@ -84,6 +89,8 @@ namespace NASA_CountDown.States
         {
             TimeWarp.SetRate(0, false);
             var clip = ConfigInfo.Instance.CurrentAudio.Abort;
+            if (GravityTurnAPI.GravityTurnActive)
+                GravityTurnAPI.Kill();
             holdPlayed = true;
             if (clip != null)
             {
@@ -155,7 +162,6 @@ namespace NASA_CountDown.States
             }
             Log.Info("final _tic: " + _tick);
             GravityTurnAPI.Launch();
-            
         }
 
         private void OnFlyByWire(FlightCtrlState st)

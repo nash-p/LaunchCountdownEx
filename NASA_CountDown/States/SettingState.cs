@@ -6,6 +6,9 @@ using NASA_CountDown.Helpers;
 using NASA_CountDown.StateMachine;
 using UnityEngine;
 
+using ClickThroughFix;
+
+
 namespace NASA_CountDown.States
 {
     public sealed class SettingState : BaseGuiState
@@ -28,6 +31,7 @@ namespace NASA_CountDown.States
 
         private void OnEnterToState(KFSMState kfsmState)
         {
+            Log.Info("OnEnterToState: SettingState");
             InitSettingState();
         }
 
@@ -49,7 +53,7 @@ namespace NASA_CountDown.States
 
             ConfigInfo.Instance.IsSoundEnabled = _soundsList.Any() && GUILayout.Toggle(ConfigInfo.Instance.IsSoundEnabled, "Sound enabled", StyleFactory.ToggleStyle);
 
-            if (_soundsList.Any())
+            if (_soundsList.Any() && ConfigInfo.Instance.IsSoundEnabled)
             {
                 GUILayout.BeginVertical();
 
