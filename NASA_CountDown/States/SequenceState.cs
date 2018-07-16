@@ -67,7 +67,7 @@ namespace NASA_CountDown.States
 
             ConfigInfo.Instance.EngineControl = GUILayout.Toggle(ConfigInfo.Instance.EngineControl, "Engine control", StyleFactory.ToggleStyle);
 
-            if (GravityTurnAPI.VerifyGTVersion())
+            if (GravityTurnAPI.GravityTurnActive)
             {
                 GUILayout.BeginHorizontal();
                 GUILayout.FlexibleSpace();
