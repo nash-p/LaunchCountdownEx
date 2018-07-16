@@ -79,8 +79,14 @@ namespace NASA_CountDown
                 Debug.Log("Toggleoff, GravityturnActive");
                 return;
             }
+
             Log.Info("ToggleOff");
-            _machine.RunEvent("Init");
+            if (!_machine.Started)
+            {
+                _machine.StartFSM("Init");
+            } else {
+                _machine.RunEvent("Init");
+            }
 
             saveLoadWinPos.LoadWindowPositions();
         }
@@ -151,7 +157,6 @@ namespace NASA_CountDown
         {
             Log.Info("OnLoad");
             ConfigInfo.Instance.Load(node);
-            _machine.StartFSM("Init");
             //_button.SetFalse();
             if (toolbarControl != null)
                 toolbarControl.SetFalse(true);
