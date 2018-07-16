@@ -26,8 +26,8 @@ namespace NASA_CountDown.States
         private void OnLeaveFromState(KFSMState kfsmState)
         {
             Log.Info("OnLeaveFromState: LaunchedState");
-            _obj.DestroyGameObjectImmediate();
             _dummy.StopAllCoroutines();
+            _obj.DestroyGameObjectImmediate();
      
         }
 
