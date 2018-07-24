@@ -234,7 +234,8 @@ namespace NASA_CountDown.Helpers
         public static Texture2D GetTexture(string name)
         {
             Texture2D tex = new Texture2D(2,2);           
-            bool b = ToolbarControl.LoadImageFromFile(ref tex, "GameData/NASA_Countdown/Images/" + name);
+            bool b = ToolbarControl.LoadImageFromFile(ref tex, KSPUtil.ApplicationRootPath + "GameData/NASA_CountDown/Images/" + name);
+            if(!b) Log.Error("LoadImageFromFile failed:"+name);
             return tex;
             //return GameDatabase.Instance.GetTexture($"NASA_Countdown/Images/{name}", false);
         }
