@@ -22,6 +22,7 @@ if "%README%" NEQ "" copy /Y %README% GameData\%GAMEDIR%
 rem Get Version info
 
 set VERSIONFILE=%GAMEDIR%.version
+
 rem The following requires the JQ program, available here: https://stedolan.github.io/jq/download/
 c:\local\jq-win64  ".VERSION.MAJOR" %VERSIONFILE% >tmpfile
 set /P major=<tmpfile

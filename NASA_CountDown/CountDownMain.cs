@@ -11,6 +11,15 @@ using ToolbarControl_NS;
 
 namespace NASA_CountDown
 {
+    [KSPAddon(KSPAddon.Startup.MainMenu, true)]
+    public class RegisterToolbar : MonoBehaviour
+    {
+        void Start()
+        {
+            ToolbarControl.RegisterMod(CountDownMain.MODID, CountDownMain.MODNAME);
+        }
+    }
+
     [KSPScenario(ScenarioCreationOptions.AddToAllGames, GameScenes.FLIGHT)]
     public class CountDownMain : ScenarioModule
     {
@@ -19,7 +28,10 @@ namespace NASA_CountDown
         //private ApplicationLauncherButton _button;
         ToolbarControl toolbarControl;
         public static SaveLoadWinPos saveLoadWinPos = new SaveLoadWinPos();
-        
+
+        internal const string MODID = "Countdown_NS";
+        internal const string MODNAME = "NASA CountDown Clock";
+
         public override void OnAwake()
         {
             instance = this;
@@ -43,11 +55,11 @@ namespace NASA_CountDown
             toolbarControl.AddToAllToolbars(ToggleOff,
                  ToggleOn,
                 ApplicationLauncher.AppScenes.FLIGHT,
-                "Countdown_NS",
+                MODID,
                 "countdownButton",
                 "NASA_CountDown/Icons/launch_icon_normal_38",
                 "NASA_CountDown/Icons/launch_icon_normal_24",
-                "NASA CountDown Clock"
+                MODNAME
             );
             //toolbarControl.UseBlizzy(HighLogic.CurrentGame.Parameters.CustomParams<FP>().useBlizzy);
             GravityTurnAPI.VerifyGTVersion();
