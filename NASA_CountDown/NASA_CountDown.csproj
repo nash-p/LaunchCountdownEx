@@ -455,9 +455,15 @@ start /D D:\Users\jbb\github\NASALaunchCountdownEx /WAIT deploy.bat  $(TargetDir
 
 
 
+
+
 if $(ConfigurationName) == Release (
 
+
+     
 start /D D:\Users\jbb\github\NASALaunchCountdownEx /WAIT buildRelease.bat $(TargetDir) $(TargetFileName)
+
+
 
 )
 </PostBuildEvent>
@@ -465,6 +471,8 @@ start /D D:\Users\jbb\github\NASALaunchCountdownEx /WAIT buildRelease.bat $(Targ
   <PropertyGroup>
     <PreBuildEvent>
 set textTemplatingPath="%25ProgramFiles(x86)%25\Microsoft Visual Studio\2017\Community\Common7\IDE \texttransform.exe"
+
+
 
 %25textTemplatingPath%25 "$(ProjectDir)AssemblyVersion.tt"</PreBuildEvent>
   </PropertyGroup>
