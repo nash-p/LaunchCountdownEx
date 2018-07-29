@@ -51,6 +51,13 @@ namespace NASA_CountDown
                 ApplicationLauncher.AppScenes.FLIGHT,
                 GameDatabase.Instance.GetTexture("NASA_CountDown/Icons/launch_icon_normal", false));
 #endif
+
+            GravityTurnAPI.VerifyGTVersion();
+        }
+
+        void Start()
+        {
+
             toolbarControl = gameObject.AddComponent<ToolbarControl>();
             toolbarControl.AddToAllToolbars(ToggleOff,
                  ToggleOn,
@@ -61,10 +68,8 @@ namespace NASA_CountDown
                 "NASA_CountDown/Icons/launch_icon_normal_24",
                 MODNAME
             );
-            //toolbarControl.UseBlizzy(HighLogic.CurrentGame.Parameters.CustomParams<FP>().useBlizzy);
-            GravityTurnAPI.VerifyGTVersion();
-            
         }
+
 #if false
         void aAwake()
         {

@@ -26,9 +26,6 @@ namespace NASA_CountDown
         [GameParameters.CustomParameterUI("Mod Enabled")]
         public bool EnabledForSave = true;      // is enabled for this save file
 
-        //[GameParameters.CustomParameterUI("Use Blizzy toolbar if installed")]
-        //public bool useBlizzy = false;
-
         [GameParameters.CustomParameterUI("Keep buttons visible")]
         public bool keepButtonsVisible = true;
 
