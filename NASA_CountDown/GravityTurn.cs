@@ -87,7 +87,7 @@ namespace NASA_CountDown
             return new System.Version(major, minor, build, revision);
         }
 
-        static bool GTAvailable = false;
+        static internal bool GTAvailable = false;
 
         /// <summary>
         /// Verifies that the Gravity Turn version the player has is compatible.
