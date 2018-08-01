@@ -60,7 +60,7 @@ namespace NASA_CountDown.States
                 _windowRect = ScaleRect(GUIUtil.ScreenCenteredRect(459, 120));
             }
 #else
-            _windowRect = CountDownMain.saveLoadWinPos.initialWindow;
+            _windowRect = CountDownMain.instance.saveLoadWinPos.initialWindow;
             //    CountDownMain.saveLoadWinPos.initialWindow;
             //if (!initialPos)
             //{
@@ -175,8 +175,8 @@ namespace NASA_CountDown.States
                 string.Empty,
                 StyleFactory.ButtonLaunchStyle))
             {
-                CountDownMain.saveLoadWinPos.initialWindow = CountDownMain.instance.initial._windowRect;
-                CountDownMain.saveLoadWinPos.SaveSettings();
+                CountDownMain.instance.saveLoadWinPos.initialWindow = CountDownMain.instance.initial._windowRect;
+               // CountDownMain.instance.saveLoadWinPos.SaveSettings();
                 
                 Machine.RunEvent("Launch");
             }
@@ -188,8 +188,8 @@ namespace NASA_CountDown.States
                     string.Empty,
                     StyleFactory.ButtonSequenceStyle))
             {
-                CountDownMain.saveLoadWinPos.initialWindow = CountDownMain.instance.initial._windowRect;
-                CountDownMain.saveLoadWinPos.SaveSettings();
+                CountDownMain.instance.saveLoadWinPos.initialWindow = CountDownMain.instance.initial._windowRect;
+                //CountDownMain.instance.saveLoadWinPos.SaveSettings();
                 Machine.RunEvent("Sequence");
             }
 
@@ -200,8 +200,8 @@ namespace NASA_CountDown.States
                     string.Empty,
                     StyleFactory.ButtonSettingsStyle))
             {
-                CountDownMain.saveLoadWinPos.initialWindow = CountDownMain.instance.initial._windowRect;
-                CountDownMain.saveLoadWinPos.SaveSettings();
+                CountDownMain.instance.saveLoadWinPos.initialWindow = CountDownMain.instance.initial._windowRect;
+               // CountDownMain.instance.saveLoadWinPos.SaveSettings();
                 Machine.RunEvent("Settings");
             }
         }

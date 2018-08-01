@@ -20,47 +20,44 @@ namespace NASA_CountDown
         }
     }
 
-    [KSPScenario(ScenarioCreationOptions.AddToAllGames, GameScenes.FLIGHT)]
-    public class CountDownMain : ScenarioModule
+    //[KSPScenario(ScenarioCreationOptions.AddToAllGames, GameScenes.FLIGHT)]
+    //public class CountDownMain : ScenarioModule
+    [KSPAddon(KSPAddon.Startup.Flight, false)]
+    public class CountDownMain : MonoBehaviour
     {
         static public CountDownMain instance;
         private KerbalFsmEx _machine;
         //private ApplicationLauncherButton _button;
         ToolbarControl toolbarControl;
-        public static SaveLoadWinPos saveLoadWinPos = new SaveLoadWinPos();
+        public SaveLoadWinPos saveLoadWinPos; // = new SaveLoadWinPos();
 
         internal const string MODID = "Countdown_NS";
         internal const string MODNAME = "NASA CountDown Clock";
 
-        public override void OnAwake()
+        public void Awake()
+        //public override void OnAwake()
         {
+            Log.Info("Awake");
             instance = this;
 
             // Create the state machine
             _machine = new KerbalFsmEx();
-
+            saveLoadWinPos = new SaveLoadWinPos();
             InitMachine();
-#if false
-            _button = ApplicationLauncher.Instance.AddModApplication(
-                //() => _machine.RunEvent("Finish"),
-               // () => _machine.RunEvent("Init"),
-             
-               ToggleOff,
-                 ToggleOn,
-                () => { }, () => { }, () => { }, () => { },
-                ApplicationLauncher.AppScenes.FLIGHT,
-                GameDatabase.Instance.GetTexture("NASA_CountDown/Icons/launch_icon_normal", false));
-#endif
 
             GravityTurnAPI.VerifyGTVersion();
         }
 
         void Start()
         {
+            Log.Info("Start");
+
+            ConfigInfo.Instance.Load();
+            GravityTurnAPI.GravityTurnActive = false;
 
             toolbarControl = gameObject.AddComponent<ToolbarControl>();
-            toolbarControl.AddToAllToolbars(ToggleOff,
-                 ToggleOn,
+            toolbarControl.AddToAllToolbars(ToggleOn,
+                 ToggleOff,
                 ApplicationLauncher.AppScenes.FLIGHT,
                 MODID,
                 "countdownButton",
@@ -70,15 +67,9 @@ namespace NASA_CountDown
             );
         }
 
-#if false
-        void aAwake()
+        void ToggleOff()
         {
-            var b = Version.VerifyGTVersion();
-        }
-#endif
-        void ToggleOn()
-        {
-            Log.Info("ToggleOn");
+            Log.Info("ToggleOff");
             _machine.RunEvent("Finish");
 
             saveLoadWinPos.LoadWindowPositions();
@@ -87,17 +78,17 @@ namespace NASA_CountDown
             saveLoadWinPos.sequenceWindow = sequence._windowRect;
             saveLoadWinPos.settingsWindow = settings._windowRect;
             saveLoadWinPos.SaveSettings();
-
         }
-        private void ToggleOff()
+
+        private void ToggleOn()
         {
             if (GravityTurnAPI.GravityTurnActive)
             {
-                Debug.Log("Toggleoff, GravityturnActive");
+                Debug.Log("ToggleOn, GravityturnActive");
                 return;
             }
 
-            Log.Info("ToggleOff");
+            Log.Info("ToggleOn");
             if (!_machine.Started)
             {
                 _machine.StartFSM("Init");
@@ -169,7 +160,7 @@ namespace NASA_CountDown
             _machine.AddState(launch);
             _machine.AddState(finish);
         }
-
+#if false
         public override void OnLoad(ConfigNode node)
         {
             Log.Info("OnLoad");
@@ -184,7 +175,7 @@ namespace NASA_CountDown
         {
             ConfigInfo.Instance.Save(node);
         }
-
+#endif
 #region Unity
 
         public void FixedUpdate()
@@ -231,6 +222,7 @@ namespace NASA_CountDown
 
         public void OnDestroy()
         {
+            Log.Info("OnDestroy");
             _machine = null;
 #if false
             if (_button != null)

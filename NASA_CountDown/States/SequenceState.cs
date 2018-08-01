@@ -22,12 +22,12 @@ namespace NASA_CountDown.States
 
         public SequenceState(string name, KerbalFsmEx machine) : base(name, machine)
         {
-            _windowRect = CountDownMain.saveLoadWinPos.sequenceWindow;
+            _windowRect = CountDownMain.instance.saveLoadWinPos.sequenceWindow;
             OnEnter = state =>
             {
-                if (!ConfigInfo.Instance.Sequences.ContainsKey(FlightGlobals.ActiveVessel.id))
+                if (!ConfigInfo.Instance.Sequences.ContainsKey(ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel)))
                 {
-                    ConfigInfo.Instance.Sequences.Add(FlightGlobals.ActiveVessel.id, Enumerable.Repeat(-1, 10).ToArray());
+                    ConfigInfo.Instance.Sequences.Add(ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel), Enumerable.Repeat(-1, 10).ToArray());
                 }
 
                 StageManager.Instance.Stages.ForEach(@group => group.Icons.ForEach(icon => icon.radioButton.onClick.AddListener(OnClickButton)));
@@ -49,7 +49,7 @@ namespace NASA_CountDown.States
 
             if (stage != null)
             {
-                ConfigInfo.Instance.Sequences[FlightGlobals.ActiveVessel.id][_stageIndex] = stage.inverseStageIndex;
+                ConfigInfo.Instance.Sequences[ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel)][_stageIndex] = stage.inverseStageIndex;
                 _isEditorState = false;
             }
         }
@@ -85,18 +85,14 @@ namespace NASA_CountDown.States
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
 
-
-
             for (int i = 0; i < 10; i++)
             {
-
                 GUILayout.BeginHorizontal();
                 GUILayout.FlexibleSpace();
 
-
                 GUILayout.Label($"{i + 1} second", StyleFactory.LabelStyle);
                 GUILayout.FlexibleSpace();
-                GUILayout.Label(ConfigInfo.Instance.Sequences[FlightGlobals.ActiveVessel.id][i] < 0 ? "none" : ConfigInfo.Instance.Sequences[FlightGlobals.ActiveVessel.id][i].ToString(), StyleFactory.LabelStyle, GUILayout.MinWidth(40));
+                GUILayout.Label(ConfigInfo.Instance.Sequences[ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel)][i] < 0 ? "none" : ConfigInfo.Instance.Sequences[ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel)][i].ToString(), StyleFactory.LabelStyle, GUILayout.MinWidth(40));
 
                 bool flag = _isEditorState && i != _stageIndex;
                 string label = _isEditorState && i == _stageIndex ? "Done" : "Set";
@@ -114,13 +110,11 @@ namespace NASA_CountDown.States
                 {
                     _isEditorState = false;
                     _stageIndex = -1;
-                    ConfigInfo.Instance.Sequences[FlightGlobals.ActiveVessel.id][i] = -1;
+                    ConfigInfo.Instance.Sequences[ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel)][i] = -1;
                 }
-
 
                 GUILayout.FlexibleSpace();
                 GUILayout.EndHorizontal();
-
             }
 
             GUILayout.BeginHorizontal();
@@ -128,6 +122,7 @@ namespace NASA_CountDown.States
 
             if (GUILayout.Button(new GUIContent(), StyleFactory.ButtonBackStyle))
             {
+                CountDownMain.instance.saveLoadWinPos.SaveSettings();
                 Machine.RunEvent("Init");
             }
 

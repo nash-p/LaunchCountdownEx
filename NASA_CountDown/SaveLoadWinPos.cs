@@ -10,8 +10,11 @@ namespace NASA_CountDown
 {
     public class SaveLoadWinPos
     {
+        public static SaveLoadWinPos Instance;
+
         public SaveLoadWinPos()
         {
+            Instance = this;
             LoadWindowPositions();
         }
 
@@ -53,7 +56,7 @@ namespace NASA_CountDown
         string SETTINGSNAME = "NASACountdown";
         string PLUGINDATA = KSPUtil.ApplicationRootPath + "GameData/NASA_CountDown/PluginData/NASACountdown.cfg";
 
-        void SaveWinPos(ConfigNode settings, string winName, Rect win)
+        internal void SaveWinPos(ConfigNode settings, string winName, Rect win)
         {
             settings.SetValue(winName + "X", (win.x + 1).ToString(), true);
             settings.SetValue(winName + "Y", (win.y + 1).ToString(), true);
@@ -64,8 +67,10 @@ namespace NASA_CountDown
 
         public void SaveSettings()
         {
-            SaveToFile();
+            ConfigInfo.Instance.Save();
+            //SaveToFile();
         }
+#if false
         void SaveToFile()
         {
             ConfigNode settingsFile = new ConfigNode();
@@ -81,7 +86,7 @@ namespace NASA_CountDown
 
             settingsFile.Save(PLUGINDATA);
         }
-
+#endif
         static public string SafeLoad(string value, double oldvalue)
         {
             if (value == null)
@@ -151,7 +156,7 @@ namespace NASA_CountDown
             {
                 settings = settingsFile.GetNode(SETTINGSNAME);
                 
-                ConfigInfo.Instance.Load(settings);
+                ConfigInfo.Instance.Load();
             }
 
             sequenceWindow = GetWinPos(settings, "sequenceWindow", SEQ_WIDTH, SEQ_HEIGHT, false);

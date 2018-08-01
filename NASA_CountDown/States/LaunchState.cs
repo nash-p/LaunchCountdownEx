@@ -31,11 +31,11 @@ namespace NASA_CountDown.States
 
             GameEvents.onVesselSituationChange.Add(SituationChanged);
 
-            if ( !ConfigInfo.Instance.Sequences.ContainsKey(FlightGlobals.ActiveVessel.id))
+            if ( !ConfigInfo.Instance.Sequences.ContainsKey(ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel)))
             {
-                ConfigInfo.Instance.Sequences.Add(FlightGlobals.ActiveVessel.id, Enumerable.Repeat(-1, 10).ToArray());
+                ConfigInfo.Instance.Sequences.Add(ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel), Enumerable.Repeat(-1, 10).ToArray());
             }
-            _stages = ConfigInfo.Instance.Sequences[FlightGlobals.ActiveVessel.id].Select(x => x < 0 ? new Action(() => { }) : new Action(() => StageManager.ActivateStage(x))).ToList();
+            _stages = ConfigInfo.Instance.Sequences[ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel)].Select(x => x < 0 ? new Action(() => { }) : new Action(() => StageManager.ActivateStage(x))).ToList();
       
 
             _dummy.StartCoroutine(this.TickLaunch());

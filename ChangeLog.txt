@@ -1,3 +1,11 @@
+1.3.7
+	Fixed hang after doing a launch with GT, on the next launch
+	Swapped names of ToggleOff and ToggleOn methods to properly reflect the functionality
+	Fixed saving of launch sequence
+	Changed id from guid to vessel name for Sequences
+	Now properly saves settings for each vessel, using the craftName before any modifications are made by other mods
+	Added optional (but highly recommended) MM patch to support this.  If MM not installed, then it uses the craftname on the pad
+
 1.3.6.7
 	Fixed missing Gravity Turn toggle
 

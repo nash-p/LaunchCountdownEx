@@ -25,7 +25,7 @@ namespace NASA_CountDown.States
         public SettingState(string name, KerbalFsmEx machine) : base(name, machine)
         {
             // _windowRect = GUIUtil.ScreenCenteredRect(200, 290);
-            _windowRect = CountDownMain.saveLoadWinPos.settingsWindow;
+            _windowRect = CountDownMain.instance.saveLoadWinPos.settingsWindow;
             OnEnter = OnEnterToState;
         }
 
@@ -103,6 +103,7 @@ namespace NASA_CountDown.States
                         StyleFactory.ButtonBackStyle.fixedWidth, StyleFactory.ButtonBackStyle.fixedHeight), string.Empty,
                     StyleFactory.ButtonBackStyle))
             {
+                CountDownMain.instance.saveLoadWinPos.SaveSettings();
                 Machine.RunEvent("Init");
             }
 
