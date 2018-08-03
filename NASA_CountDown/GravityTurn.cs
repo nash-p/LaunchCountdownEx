@@ -109,11 +109,11 @@ namespace NASA_CountDown
         public static bool Launch()
         {
             Log.Info("Launch");
-            if (!GTAvailable || !ConfigInfo.Instance.useGravityTurn)
+            if (!GTAvailable || !ConfigInfo.Instance.VesselOptions[ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel)].useGravityTurn)
             {
                 return false;
             }
-            if (!ConfigInfo.Instance.LaunchSequenceControl)
+            if (!ConfigInfo.Instance.VesselOptions[ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel)].LaunchSequenceControl)
                 return false;
             Log.Info("GravityTurn detected");
             try
@@ -162,7 +162,7 @@ namespace NASA_CountDown
         public static bool Kill()
         {
             Log.Info("Kill");
-            if (!GTAvailable || !ConfigInfo.Instance.useGravityTurn)
+            if (!GTAvailable || !ConfigInfo.Instance.VesselOptions[ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel)].useGravityTurn)
             {
                 return false;
             }

@@ -31,7 +31,7 @@ namespace NASA_CountDown.States
             if (_dummy == null)
                 return;
             Log.Info("OnLeaveFromState: InitialState");
-            FlightInputHandler.state.mainThrottle = ConfigInfo.Instance.defaultThrottle;
+            FlightInputHandler.state.mainThrottle = ConfigInfo.Instance.VesselOptions[ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel)].defaultThrottle;
 
             _dummy.StopAllCoroutines();
             _obj.DestroyGameObjectImmediate();

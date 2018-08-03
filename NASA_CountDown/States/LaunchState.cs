@@ -26,7 +26,7 @@ namespace NASA_CountDown.States
             _audioSource.spatialBlend = 0;
             _audioSource.volume = GameSettings.VOICE_VOLUME;
             
-            if (ConfigInfo.Instance.LaunchSequenceControl)
+            if (ConfigInfo.Instance.VesselOptions[ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel)].LaunchSequenceControl)
                 FlightGlobals.ActiveVessel.OnFlyByWire = (FlightInputCallback)Delegate.Combine(FlightGlobals.ActiveVessel.OnFlyByWire, (FlightInputCallback)OnFlyByWire);
 
             GameEvents.onVesselSituationChange.Add(SituationChanged);
@@ -34,8 +34,9 @@ namespace NASA_CountDown.States
             if ( !ConfigInfo.Instance.Sequences.ContainsKey(ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel)))
             {
                 ConfigInfo.Instance.Sequences.Add(ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel), Enumerable.Repeat(-1, 10).ToArray());
+                ConfigInfo.Instance.VesselOptions.Add(ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel), new PerVesselOptions());                
             }
-            _stages = ConfigInfo.Instance.Sequences[ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel)].Select(x => x < 0 ? new Action(() => { }) : new Action(() => { if (ConfigInfo.Instance.LaunchSequenceControl) StageManager.ActivateStage(x); } )).ToList();
+            _stages = ConfigInfo.Instance.Sequences[ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel)].Select(x => x < 0 ? new Action(() => { }) : new Action(() => { if (ConfigInfo.Instance.VesselOptions[ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel)].LaunchSequenceControl) StageManager.ActivateStage(x); } )).ToList();
       
 
             _dummy.StartCoroutine(this.TickLaunch());
@@ -45,7 +46,7 @@ namespace NASA_CountDown.States
         {
             Log.Info("OnLeaveFromState: LaunchState");
             base.OnLeaveFromState(kfsmState);
-            if (ConfigInfo.Instance.LaunchSequenceControl)
+            if (ConfigInfo.Instance.VesselOptions[ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel)].LaunchSequenceControl)
             {
                 Log.Info("Removing OnFlyByWire");
                 FlightGlobals.ActiveVessel.OnFlyByWire = (FlightInputCallback)Delegate.Remove(FlightGlobals.ActiveVessel.OnFlyByWire, (FlightInputCallback)OnFlyByWire);
@@ -176,7 +177,7 @@ namespace NASA_CountDown.States
                 case 3:
                 case 2:
                 case 1:
-                    st.mainThrottle = ConfigInfo.Instance.defaultInitialThrottle;
+                    st.mainThrottle = ConfigInfo.Instance.VesselOptions[ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel)].defaultInitialThrottle;
                     break;
                 case 0:
                     //st.mainThrottle = 1f;
@@ -184,16 +185,16 @@ namespace NASA_CountDown.States
                     if (GravityTurnAPI.Launch())  // If GravityTurn is available
                         break;
 
-                    st.mainThrottle = ConfigInfo.Instance.defaultThrottle;
-                    if (ConfigInfo.Instance.enableSAS)
+                    st.mainThrottle = ConfigInfo.Instance.VesselOptions[ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel)].defaultThrottle;
+                    if (ConfigInfo.Instance.VesselOptions[ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel)].enableSAS)
                         FlightGlobals.ActiveVessel.ActionGroups.SetGroup(KSPActionGroup.SAS, true);
 
                     break;
                 default:
-                    if (ConfigInfo.Instance.enableSAS)
+                    if (ConfigInfo.Instance.VesselOptions[ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel)].enableSAS)
                         FlightGlobals.ActiveVessel.ActionGroups.SetGroup(KSPActionGroup.SAS, true);
                     //st.mainThrottle = 0f;
-                    st.mainThrottle = ConfigInfo.Instance.defaultThrottle;
+                    st.mainThrottle = ConfigInfo.Instance.VesselOptions[ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel)].defaultThrottle;
                     break;
             }
         }

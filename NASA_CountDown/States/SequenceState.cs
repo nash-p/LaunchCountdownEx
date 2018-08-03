@@ -30,6 +30,7 @@ namespace NASA_CountDown.States
                 if (!ConfigInfo.Instance.Sequences.ContainsKey(ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel)))
                 {
                     ConfigInfo.Instance.Sequences.Add(ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel), Enumerable.Repeat(-1, 10).ToArray());
+                    ConfigInfo.Instance.VesselOptions.Add(ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel), new PerVesselOptions());
                 }
 
                 StageManager.Instance.Stages.ForEach(@group => group.Icons.ForEach(icon => icon.radioButton.onClick.AddListener(OnClickButton)));
@@ -68,28 +69,28 @@ namespace NASA_CountDown.States
             GUILayout.Space(10);
             GUILayout.FlexibleSpace();
 
-            ConfigInfo.Instance.LaunchSequenceControl = GUILayout.Toggle(ConfigInfo.Instance.LaunchSequenceControl, "Launch sequence control", StyleFactory.ToggleStyle);
-            ConfigInfo.Instance.enableSAS = GUILayout.Toggle(ConfigInfo.Instance.enableSAS, "Enable SAS at launch", StyleFactory.ToggleStyle);
+            ConfigInfo.Instance.VesselOptions[ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel)].LaunchSequenceControl = GUILayout.Toggle(ConfigInfo.Instance.VesselOptions[ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel)].LaunchSequenceControl, "Launch sequence control", StyleFactory.ToggleStyle);
+            ConfigInfo.Instance.VesselOptions[ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel)].enableSAS = GUILayout.Toggle(ConfigInfo.Instance.VesselOptions[ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel)].enableSAS, "Enable SAS at launch", StyleFactory.ToggleStyle);
             GUILayout.BeginHorizontal();
             GUILayout.Space(20);
-            GUILayout.Label("Initial throttle (" + (ConfigInfo.Instance.defaultInitialThrottle*100).ToString("F1") + "):");
+            GUILayout.Label("Initial throttle (" + (ConfigInfo.Instance.VesselOptions[ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel)].defaultInitialThrottle*100).ToString("F1") + "%):");
             GUILayout.FlexibleSpace();
-            ConfigInfo.Instance.defaultInitialThrottle = GUILayout.HorizontalSlider(ConfigInfo.Instance.defaultInitialThrottle, 0.01f, 0.99f, GUILayout.Width(100));
+            ConfigInfo.Instance.VesselOptions[ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel)].defaultInitialThrottle = GUILayout.HorizontalSlider(ConfigInfo.Instance.VesselOptions[ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel)].defaultInitialThrottle, 0.01f, 0.99f, GUILayout.Width(100));
             GUILayout.Space(20);
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
             GUILayout.Space(20);
-            GUILayout.Label("Final throttle (" + (ConfigInfo.Instance.defaultThrottle * 100).ToString("F1") + "):");
+            GUILayout.Label("Final throttle (" + (ConfigInfo.Instance.VesselOptions[ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel)].defaultThrottle * 100).ToString("F1") + "%):");
             GUILayout.FlexibleSpace();
-            ConfigInfo.Instance.defaultThrottle = GUILayout.HorizontalSlider(ConfigInfo.Instance.defaultThrottle, 0.01f, 1.0f, GUILayout.Width(100));
+            ConfigInfo.Instance.VesselOptions[ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel)].defaultThrottle = GUILayout.HorizontalSlider(ConfigInfo.Instance.VesselOptions[ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel)].defaultThrottle, 0.01f, 1.0f, GUILayout.Width(100));
             GUILayout.Space(20);
             GUILayout.EndHorizontal();
 
-            if (!ConfigInfo.Instance.LaunchSequenceControl)
+            if (!ConfigInfo.Instance.VesselOptions[ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel)].LaunchSequenceControl)
                 GUI.enabled = false;
             if (GravityTurnAPI.GTAvailable)
             {
-                ConfigInfo.Instance.useGravityTurn = GUILayout.Toggle(ConfigInfo.Instance.useGravityTurn, "Use Gravity Turn", StyleFactory.ToggleStyle);
+                ConfigInfo.Instance.VesselOptions[ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel)].useGravityTurn = GUILayout.Toggle(ConfigInfo.Instance.VesselOptions[ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel)].useGravityTurn, "Use Gravity Turn", StyleFactory.ToggleStyle);
             }
             GUI.enabled = true;
             GUILayout.BeginHorizontal();

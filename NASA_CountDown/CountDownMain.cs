@@ -54,6 +54,7 @@ namespace NASA_CountDown
 
             ConfigInfo.Instance.Load();
             GravityTurnAPI.GravityTurnActive = false;
+            ConfigInfo.Instance.InitNewConfig();
 
             toolbarControl = gameObject.AddComponent<ToolbarControl>();
             toolbarControl.AddToAllToolbars(ToggleOn,

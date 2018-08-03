@@ -6,6 +6,15 @@ using UnityEngine;
 
 namespace NASA_CountDown.Config
 {
+    public class PerVesselOptions
+        {
+            internal bool LaunchSequenceControl { get; set; } = HighLogic.CurrentGame.Parameters.CustomParams<NC>().LaunchSequenceControl;
+            internal bool enableSAS { get; set; } = HighLogic.CurrentGame.Parameters.CustomParams<NC>().enableSAS;
+            internal float defaultInitialThrottle { get; set; } = HighLogic.CurrentGame.Parameters.CustomParams<NC>().defaultInitialThrottle;
+            internal float defaultThrottle { get; set; } = HighLogic.CurrentGame.Parameters.CustomParams<NC>().defaultThrottle;
+            internal bool useGravityTurn { get; set; } = false;
+        }
+
     class ConfigInfo //: IConfigNode
     {
         private readonly RectWrapper _wrapper = new RectWrapper();
@@ -23,10 +32,8 @@ namespace NASA_CountDown.Config
         internal Rect WindowPosition { get; set; } = GUIUtil.ScreenCenteredRect(459, 120);
 
         // Add the following to the Load/Save
-        internal bool LaunchSequenceControl { get; set; } = HighLogic.CurrentGame.Parameters.CustomParams<NC>().LaunchSequenceControl;
-        internal bool enableSAS { get; set; } = HighLogic.CurrentGame.Parameters.CustomParams<NC>().enableSAS;
-        internal float defaultInitialThrottle { get; set; } = HighLogic.CurrentGame.Parameters.CustomParams<NC>().defaultInitialThrottle;
-        internal float defaultThrottle { get; set; } = HighLogic.CurrentGame.Parameters.CustomParams<NC>().defaultThrottle;
+
+        internal Dictionary<string, PerVesselOptions> VesselOptions { get; set; } = new Dictionary<string, PerVesselOptions>();
         //
 
         internal bool AbortExecuted { get; set; } = true;
@@ -35,7 +42,7 @@ namespace NASA_CountDown.Config
 
         internal bool IsLoaded { get; private set; } = false;
 
-        internal bool useGravityTurn { get; set; } = false;
+
 
         internal static ConfigInfo Instance => _config ?? (_config = new ConfigInfo());
 
@@ -57,20 +64,23 @@ namespace NASA_CountDown.Config
                 SaveLoadWinPos.Instance.SaveWinPos(settings, "settingsWindow", SaveLoadWinPos.Instance.settingsWindow);
 
             settings.AddValue("soundEnabled", IsSoundEnabled);
-            settings.AddValue("engineControl", LaunchSequenceControl);
             settings.AddValue("scale", Scale);
             settings.AddValue("soundSet", SoundSet);
-            settings.AddValue("useGravityTurn", useGravityTurn);
 
-            settings.AddValue("LaunchSequenceControl", LaunchSequenceControl);
-            settings.AddValue("enableSAS", enableSAS);
-            settings.AddValue("defaultInitialThrottle", defaultInitialThrottle);
-            settings.AddValue("defaultThrottle", defaultThrottle);
+
 
             foreach (var sequence in Sequences)
             {
                 var seqNode = new ConfigNode("sequence");
                 seqNode.AddValue("id", sequence.Key);
+
+                seqNode.AddValue("useGravityTurn", VesselOptions[sequence.Key].useGravityTurn);
+                seqNode.AddValue("LaunchSequenceControl", VesselOptions[sequence.Key].LaunchSequenceControl);
+                seqNode.AddValue("enableSAS", VesselOptions[sequence.Key].enableSAS);
+                seqNode.AddValue("defaultInitialThrottle", VesselOptions[sequence.Key].defaultInitialThrottle);
+                seqNode.AddValue("defaultThrottle", VesselOptions[sequence.Key].defaultThrottle);
+
+        
                 string stages = "";
                 for (int i = 0; i < sequence.Value.Length; i++)
                 {
@@ -105,16 +115,6 @@ namespace NASA_CountDown.Config
                         IsSoundEnabled = bool.Parse(node.GetValue("soundEnabled"));
                     }
 
-                    if (node.HasValue("useGravityTurn"))
-                    {
-                        useGravityTurn = bool.Parse(node.GetValue("useGravityTurn"));
-                    }
-
-                    if (node.HasValue("engineControl"))
-                    {
-                        LaunchSequenceControl = bool.Parse(node.GetValue("engineControl"));
-                    }
-
                     if (node.HasValue("abort"))
                     {
                         AbortExecuted = bool.Parse(node.GetValue("abort"));
@@ -135,39 +135,41 @@ namespace NASA_CountDown.Config
                         WindowPosition = _wrapper.ToRect(node.GetValue("position"));
                         Debug.LogWarning("Position is" + WindowPosition);
                     }
-
-
-
-                    if (node.HasValue("LaunchSequenceControl"))
-                    {
-                        LaunchSequenceControl = bool.Parse(node.GetValue("LaunchSequenceControl"));
-                    }
-
-                    if (node.HasValue("enableSAS"))
-                    {
-                        enableSAS = bool.Parse(node.GetValue("enableSAS"));
-                    }
-
-                    if (node.HasValue("defaultInitialThrottle"))
-                    {
-                        defaultInitialThrottle = float.Parse(node.GetValue("defaultInitialThrottle"));
-                    }
-                    if (node.HasValue("defaultThrottle"))
-                    {
-                        defaultThrottle = float.Parse(node.GetValue("defaultThrottle"));
-                    }
-
-
-
+                    
                     if (node.HasNode("sequence"))
                     {
                         var sequences = node.GetNodes("sequence");
-
                         Sequences.Clear();
+                        VesselOptions.Clear();
 
                         foreach (var sequence in sequences)
                         {
-                            //Sequences.Add(new Guid(sequence.GetValue("id")), sequence.GetValue("stages").Split(',').Select(int.Parse).ToArray()); Sequences.Add(new Guid(sequence.GetValue("id")), sequence.GetValue("stages").Split(',').Select(int.Parse).ToArray());
+                            PerVesselOptions pvo = new PerVesselOptions();
+                            if (sequence.HasValue("LaunchSequenceControl"))
+                            {
+                                pvo.LaunchSequenceControl = bool.Parse(sequence.GetValue("LaunchSequenceControl"));
+                            }
+
+                            if (sequence.HasValue("enableSAS"))
+                            {
+                                pvo.enableSAS = bool.Parse(sequence.GetValue("enableSAS"));
+                            }
+
+                            if (sequence.HasValue("defaultInitialThrottle"))
+                            {
+                                pvo.defaultInitialThrottle = float.Parse(sequence.GetValue("defaultInitialThrottle"));
+                            }
+                            if (sequence.HasValue("defaultThrottle"))
+                            {
+                                pvo.defaultThrottle = float.Parse(sequence.GetValue("defaultThrottle"));
+                            }
+
+                            if (sequence.HasValue("useGravityTurn"))
+                            {
+                                pvo.useGravityTurn = bool.Parse(sequence.GetValue("useGravityTurn"));
+                            }
+                            VesselOptions.Add(sequence.GetValue("id"), pvo);
+
                             int[] ar = Enumerable.Repeat(-1, 10).ToArray();
                             var d = sequence.GetValue("stages").Split(',').Select(int.Parse).ToArray();
                             for (int i = 0; i < d.Length; i++)
@@ -184,6 +186,7 @@ namespace NASA_CountDown.Config
                         if (FlightGlobals.ActiveVessel != null && !ConfigInfo.Instance.Sequences.ContainsKey(ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel)))
                         {
                             Sequences.Add(ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel), Enumerable.Repeat(-1, 10).ToArray());
+                            VesselOptions.Add(ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel), new PerVesselOptions());
                         }
                     }
 
@@ -193,76 +196,14 @@ namespace NASA_CountDown.Config
 
 
         }
-#if false
-        public void Load(ConfigNode node)
+        public void InitNewConfig()
         {
-            try
+            if (FlightGlobals.ActiveVessel != null && !ConfigInfo.Instance.Sequences.ContainsKey(ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel)))
             {
-                LoadSounds();
-
-                if (node == null) throw new NullReferenceException("Node not exist");
-
-                if (node.HasValue("soundEnabled"))
-                {
-                    IsSoundEnabled = bool.Parse(node.GetValue("soundEnabled"));
-                }
-
-                if (node.HasValue("engineControl"))
-                {
-                    EngineControl = bool.Parse(node.GetValue("engineControl"));
-                }
-
-                if (node.HasValue("abort"))
-                {
-                    AbortExecuted = bool.Parse(node.GetValue("abort"));
-                }
-
-                if (node.HasValue("scale"))
-                {
-                    Scale = float.Parse(node.GetValue("scale"));
-                }
-
-                if (node.HasValue("soundSet"))
-                {
-                    SoundSet = node.GetValue("soundSet");
-                }
-
-                if (node.HasValue("position"))
-                {
-                    WindowPosition = _wrapper.ToRect(node.GetValue("position"));
-                    Debug.LogWarning("Position is" + WindowPosition);
-                }
-#if false
-                if (node.HasNode("sequence"))
-                {
-                    var sequences = node.GetNodes("sequence");
-
-                    Sequences.Clear();
-
-                    foreach (var sequence in sequences)
-                    {
-                        Sequences.Add(new Guid(sequence.GetValue("id")), sequence.GetValue("stages").Split(',').Select(int.Parse).ToArray());
-                    }
-                }
-                else
-#endif
-                {
-                    if (FlightGlobals.ActiveVessel != null && !ConfigInfo.Instance.Sequences.ContainsKey(ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel)))
-                    {
-                        Sequences.Add(ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel), Enumerable.Repeat(-1, 10).ToArray());
-                    }
-                }
-
-                IsLoaded = true;
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError("Cannot load config");
-                Debug.LogException(ex);
-                IsLoaded = false;
+                ConfigInfo.Instance.Sequences.Add(ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel), Enumerable.Repeat(-1, 10).ToArray());
+                ConfigInfo.Instance.VesselOptions.Add(ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel), new PerVesselOptions());
             }
         }
-#endif
 
         private void LoadSounds()
         {
@@ -275,30 +216,6 @@ namespace NASA_CountDown.Config
             {
                 if (!AudioSets.ContainsKey(name))
                     AudioSets.Add(name, new AudioSet(name));
-            }
-        }
-
-        public void Save(ConfigNode node)
-        {
-            node.AddValue("soundEnabled", IsSoundEnabled);
-            node.AddValue("soundSet", SoundSet);
-
-            _wrapper.FromRect(WindowPosition);
-
-            node.AddValue("position", _wrapper);
-            node.AddValue("engineControl", LaunchSequenceControl);
-            node.AddValue("abort", AbortExecuted);
-            node.AddValue("scale", Scale);
-
-            foreach (var sequence in Sequences)
-            {
-                var seqNode = node.AddNode("sequence");
-
-                seqNode.AddValue("id", sequence.Key);
-
-                string value = sequence.Value.Select(x => x.ToString()).Aggregate((x, y) => $"{x},{y}");
-
-                seqNode.AddValue("stages", value);
             }
         }
 
