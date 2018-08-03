@@ -113,6 +113,8 @@ namespace NASA_CountDown
             {
                 return false;
             }
+            if (!ConfigInfo.Instance.LaunchSequenceControl)
+                return false;
             Log.Info("GravityTurn detected");
             try
             {

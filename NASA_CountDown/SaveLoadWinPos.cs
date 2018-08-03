@@ -155,13 +155,13 @@ namespace NASA_CountDown
             if (settingsFile != null)
             {
                 settings = settingsFile.GetNode(SETTINGSNAME);
-                
-                ConfigInfo.Instance.Load();
-            }
 
-            sequenceWindow = GetWinPos(settings, "sequenceWindow", SEQ_WIDTH, SEQ_HEIGHT, false);
-            initialWindow = GetWinPos(settings, "initialWindow", CNT_WIDTH, CNT_HEIGHT);
-            settingsWindow = GetWinPos(settings, "settingsWindow", CFG_WIDTH, CFG_HEIGHT, false);
+                ConfigInfo.Instance.Load();
+
+                sequenceWindow = GetWinPos(settings, "sequenceWindow", SEQ_WIDTH, SEQ_HEIGHT, false);
+                initialWindow = GetWinPos(settings, "initialWindow", CNT_WIDTH, CNT_HEIGHT);
+                settingsWindow = GetWinPos(settings, "settingsWindow", CFG_WIDTH, CFG_HEIGHT, false);
+            }
         }
     }
 }

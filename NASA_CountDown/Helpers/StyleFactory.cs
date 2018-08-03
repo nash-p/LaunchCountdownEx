@@ -30,7 +30,7 @@ namespace NASA_CountDown.Helpers
             LaunchSequenceStyle = new GUIStyle()
             {
                 fixedWidth = 270f,
-                fixedHeight = 400f,
+                fixedHeight = 500f,
                 normal = { background = GetTexture("LaunchSeqBG") },
                 active = { background = GetTexture("LaunchSeqBG") },
                 hover = { background = GetTexture("LaunchSeqBG") },

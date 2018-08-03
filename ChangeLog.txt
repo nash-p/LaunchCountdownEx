@@ -1,3 +1,15 @@
+1.3.7.1
+	Fixed bug where launch sequence item #10 was not being saved
+	Fixed the enableSAS not being obeyed (was always being turned on)
+	Renamed EngineControl to LaunchSequenceControl
+	Made change so if LaunchSequenceControl is false, no stages will be activated and GravityTurn will not be called.
+	Added the following to the per-vessel info:
+		LaunchSequenceControl
+		Initial throttle
+		Final throttle
+		Enable SAS at launch
+
+
 1.3.7
 	Fixed hang after doing a launch with GT, on the next launch
 	Swapped names of ToggleOff and ToggleOn methods to properly reflect the functionality

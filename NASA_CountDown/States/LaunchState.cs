@@ -26,7 +26,7 @@ namespace NASA_CountDown.States
             _audioSource.spatialBlend = 0;
             _audioSource.volume = GameSettings.VOICE_VOLUME;
             
-            if (ConfigInfo.Instance.EngineControl)
+            if (ConfigInfo.Instance.LaunchSequenceControl)
                 FlightGlobals.ActiveVessel.OnFlyByWire = (FlightInputCallback)Delegate.Combine(FlightGlobals.ActiveVessel.OnFlyByWire, (FlightInputCallback)OnFlyByWire);
 
             GameEvents.onVesselSituationChange.Add(SituationChanged);
@@ -35,7 +35,7 @@ namespace NASA_CountDown.States
             {
                 ConfigInfo.Instance.Sequences.Add(ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel), Enumerable.Repeat(-1, 10).ToArray());
             }
-            _stages = ConfigInfo.Instance.Sequences[ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel)].Select(x => x < 0 ? new Action(() => { }) : new Action(() => StageManager.ActivateStage(x))).ToList();
+            _stages = ConfigInfo.Instance.Sequences[ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel)].Select(x => x < 0 ? new Action(() => { }) : new Action(() => { if (ConfigInfo.Instance.LaunchSequenceControl) StageManager.ActivateStage(x); } )).ToList();
       
 
             _dummy.StartCoroutine(this.TickLaunch());
@@ -45,7 +45,7 @@ namespace NASA_CountDown.States
         {
             Log.Info("OnLeaveFromState: LaunchState");
             base.OnLeaveFromState(kfsmState);
-            if (ConfigInfo.Instance.EngineControl)
+            if (ConfigInfo.Instance.LaunchSequenceControl)
             {
                 Log.Info("Removing OnFlyByWire");
                 FlightGlobals.ActiveVessel.OnFlyByWire = (FlightInputCallback)Delegate.Remove(FlightGlobals.ActiveVessel.OnFlyByWire, (FlightInputCallback)OnFlyByWire);
@@ -166,6 +166,7 @@ namespace NASA_CountDown.States
 
         private void OnFlyByWire(FlightCtrlState st)
         {
+            Log.Info("OnFlyByWire, tic: " + _tick);
             switch (_tick)
             {
                 case 7:
@@ -175,7 +176,7 @@ namespace NASA_CountDown.States
                 case 3:
                 case 2:
                 case 1:
-                    st.mainThrottle = HighLogic.CurrentGame.Parameters.CustomParams<NC>().defaultInitialThrottle;
+                    st.mainThrottle = ConfigInfo.Instance.defaultInitialThrottle;
                     break;
                 case 0:
                     //st.mainThrottle = 1f;
@@ -183,13 +184,16 @@ namespace NASA_CountDown.States
                     if (GravityTurnAPI.Launch())  // If GravityTurn is available
                         break;
 
-                    st.mainThrottle = HighLogic.CurrentGame.Parameters.CustomParams<NC>().defaultThrottle;
-                    FlightGlobals.ActiveVessel.ActionGroups.SetGroup(KSPActionGroup.SAS, true);
+                    st.mainThrottle = ConfigInfo.Instance.defaultThrottle;
+                    if (ConfigInfo.Instance.enableSAS)
+                        FlightGlobals.ActiveVessel.ActionGroups.SetGroup(KSPActionGroup.SAS, true);
 
                     break;
                 default:
+                    if (ConfigInfo.Instance.enableSAS)
+                        FlightGlobals.ActiveVessel.ActionGroups.SetGroup(KSPActionGroup.SAS, true);
                     //st.mainThrottle = 0f;
-                    st.mainThrottle = HighLogic.CurrentGame.Parameters.CustomParams<NC>().defaultThrottle;
+                    st.mainThrottle = ConfigInfo.Instance.defaultThrottle;
                     break;
             }
         }

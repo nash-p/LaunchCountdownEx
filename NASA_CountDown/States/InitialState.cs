@@ -31,7 +31,7 @@ namespace NASA_CountDown.States
             if (_dummy == null)
                 return;
             Log.Info("OnLeaveFromState: InitialState");
-            FlightInputHandler.state.mainThrottle = HighLogic.CurrentGame.Parameters.CustomParams<NC>().defaultThrottle;
+            FlightInputHandler.state.mainThrottle = ConfigInfo.Instance.defaultThrottle;
 
             _dummy.StopAllCoroutines();
             _obj.DestroyGameObjectImmediate();

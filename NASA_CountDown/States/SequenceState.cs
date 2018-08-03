@@ -15,7 +15,7 @@ namespace NASA_CountDown.States
 {
     public class SequenceState : BaseGuiState
     {
-        public Rect _windowRect = GUIUtil.ScreenCenteredRect(270, 400);
+        public Rect _windowRect = GUIUtil.ScreenCenteredRect(270, 500);
         private bool _isEditorState;
         private int _stageIndex;
 
@@ -23,6 +23,8 @@ namespace NASA_CountDown.States
         public SequenceState(string name, KerbalFsmEx machine) : base(name, machine)
         {
             _windowRect = CountDownMain.instance.saveLoadWinPos.sequenceWindow;
+            _windowRect.height = 500;
+
             OnEnter = state =>
             {
                 if (!ConfigInfo.Instance.Sequences.ContainsKey(ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel)))
@@ -63,20 +65,33 @@ namespace NASA_CountDown.States
         private void DrawSequenceWindow(int id)
         {
             GUILayout.BeginVertical();
+            GUILayout.Space(10);
             GUILayout.FlexibleSpace();
 
-            ConfigInfo.Instance.EngineControl = GUILayout.Toggle(ConfigInfo.Instance.EngineControl, "Engine control", StyleFactory.ToggleStyle);
+            ConfigInfo.Instance.LaunchSequenceControl = GUILayout.Toggle(ConfigInfo.Instance.LaunchSequenceControl, "Launch sequence control", StyleFactory.ToggleStyle);
+            ConfigInfo.Instance.enableSAS = GUILayout.Toggle(ConfigInfo.Instance.enableSAS, "Enable SAS at launch", StyleFactory.ToggleStyle);
+            GUILayout.BeginHorizontal();
+            GUILayout.Space(20);
+            GUILayout.Label("Initial throttle (" + (ConfigInfo.Instance.defaultInitialThrottle*100).ToString("F1") + "):");
+            GUILayout.FlexibleSpace();
+            ConfigInfo.Instance.defaultInitialThrottle = GUILayout.HorizontalSlider(ConfigInfo.Instance.defaultInitialThrottle, 0.01f, 0.99f, GUILayout.Width(100));
+            GUILayout.Space(20);
+            GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            GUILayout.Space(20);
+            GUILayout.Label("Final throttle (" + (ConfigInfo.Instance.defaultThrottle * 100).ToString("F1") + "):");
+            GUILayout.FlexibleSpace();
+            ConfigInfo.Instance.defaultThrottle = GUILayout.HorizontalSlider(ConfigInfo.Instance.defaultThrottle, 0.01f, 1.0f, GUILayout.Width(100));
+            GUILayout.Space(20);
+            GUILayout.EndHorizontal();
 
+            if (!ConfigInfo.Instance.LaunchSequenceControl)
+                GUI.enabled = false;
             if (GravityTurnAPI.GTAvailable)
             {
-                GUILayout.BeginHorizontal();
-                GUILayout.FlexibleSpace();
-                GUILayout.Label("Use Gravity Turn", StyleFactory.LabelStyle);
-                GUILayout.FlexibleSpace();
-                ConfigInfo.Instance.useGravityTurn = GUILayout.Toggle(ConfigInfo.Instance.useGravityTurn, "");
-                GUILayout.FlexibleSpace();
-                GUILayout.EndHorizontal();
+                ConfigInfo.Instance.useGravityTurn = GUILayout.Toggle(ConfigInfo.Instance.useGravityTurn, "Use Gravity Turn", StyleFactory.ToggleStyle);
             }
+            GUI.enabled = true;
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
             GUILayout.Label("Elapsed time", StyleFactory.LabelStyle);

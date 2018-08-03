@@ -22,7 +22,12 @@ namespace NASA_CountDown.Config
 
         internal Rect WindowPosition { get; set; } = GUIUtil.ScreenCenteredRect(459, 120);
 
-        internal bool EngineControl { get; set; } = true;
+        // Add the following to the Load/Save
+        internal bool LaunchSequenceControl { get; set; } = HighLogic.CurrentGame.Parameters.CustomParams<NC>().LaunchSequenceControl;
+        internal bool enableSAS { get; set; } = HighLogic.CurrentGame.Parameters.CustomParams<NC>().enableSAS;
+        internal float defaultInitialThrottle { get; set; } = HighLogic.CurrentGame.Parameters.CustomParams<NC>().defaultInitialThrottle;
+        internal float defaultThrottle { get; set; } = HighLogic.CurrentGame.Parameters.CustomParams<NC>().defaultThrottle;
+        //
 
         internal bool AbortExecuted { get; set; } = true;
 
@@ -52,23 +57,27 @@ namespace NASA_CountDown.Config
                 SaveLoadWinPos.Instance.SaveWinPos(settings, "settingsWindow", SaveLoadWinPos.Instance.settingsWindow);
 
             settings.AddValue("soundEnabled", IsSoundEnabled);
-            settings.AddValue("engineControl", EngineControl);
+            settings.AddValue("engineControl", LaunchSequenceControl);
             settings.AddValue("scale", Scale);
             settings.AddValue("soundSet", SoundSet);
             settings.AddValue("useGravityTurn", useGravityTurn);
+
+            settings.AddValue("LaunchSequenceControl", LaunchSequenceControl);
+            settings.AddValue("enableSAS", enableSAS);
+            settings.AddValue("defaultInitialThrottle", defaultInitialThrottle);
+            settings.AddValue("defaultThrottle", defaultThrottle);
 
             foreach (var sequence in Sequences)
             {
                 var seqNode = new ConfigNode("sequence");
                 seqNode.AddValue("id", sequence.Key);
                 string stages = "";
-                for (int i = 0; i < sequence.Value.Length - 1; i++)
-                    //if (sequence.Value[i] >= 0)
-                    {
-                        if (stages != "")
-                            stages += ",";
-                        stages += sequence.Value[i].ToString();
-                    }
+                for (int i = 0; i < sequence.Value.Length; i++)
+                {
+                    if (stages != "")
+                        stages += ",";
+                    stages += sequence.Value[i].ToString();
+                }
 
                 if (stages != "")
                 {
@@ -77,7 +86,7 @@ namespace NASA_CountDown.Config
                     settings.AddNode(seqNode);
                 }
             }
-            
+
             settingsFile.Save(PLUGINDATA);
         }
 
@@ -85,7 +94,7 @@ namespace NASA_CountDown.Config
         {
             LoadSounds();
             Log.Info("ConfigInfo.Load");
-            ConfigNode settingsFile =  ConfigNode.Load(PLUGINDATA);
+            ConfigNode settingsFile = ConfigNode.Load(PLUGINDATA);
             if (settingsFile != null)
             {
                 ConfigNode node = settingsFile.GetNode(SETTINGSNAME);
@@ -103,7 +112,7 @@ namespace NASA_CountDown.Config
 
                     if (node.HasValue("engineControl"))
                     {
-                        EngineControl = bool.Parse(node.GetValue("engineControl"));
+                        LaunchSequenceControl = bool.Parse(node.GetValue("engineControl"));
                     }
 
                     if (node.HasValue("abort"))
@@ -126,15 +135,38 @@ namespace NASA_CountDown.Config
                         WindowPosition = _wrapper.ToRect(node.GetValue("position"));
                         Debug.LogWarning("Position is" + WindowPosition);
                     }
-#if true
-                if (node.HasNode("sequence"))
-                {
-                    var sequences = node.GetNodes("sequence");
 
-                    Sequences.Clear();
 
-                    foreach (var sequence in sequences)
+
+                    if (node.HasValue("LaunchSequenceControl"))
                     {
+                        LaunchSequenceControl = bool.Parse(node.GetValue("LaunchSequenceControl"));
+                    }
+
+                    if (node.HasValue("enableSAS"))
+                    {
+                        enableSAS = bool.Parse(node.GetValue("enableSAS"));
+                    }
+
+                    if (node.HasValue("defaultInitialThrottle"))
+                    {
+                        defaultInitialThrottle = float.Parse(node.GetValue("defaultInitialThrottle"));
+                    }
+                    if (node.HasValue("defaultThrottle"))
+                    {
+                        defaultThrottle = float.Parse(node.GetValue("defaultThrottle"));
+                    }
+
+
+
+                    if (node.HasNode("sequence"))
+                    {
+                        var sequences = node.GetNodes("sequence");
+
+                        Sequences.Clear();
+
+                        foreach (var sequence in sequences)
+                        {
                             //Sequences.Add(new Guid(sequence.GetValue("id")), sequence.GetValue("stages").Split(',').Select(int.Parse).ToArray()); Sequences.Add(new Guid(sequence.GetValue("id")), sequence.GetValue("stages").Split(',').Select(int.Parse).ToArray());
                             int[] ar = Enumerable.Repeat(-1, 10).ToArray();
                             var d = sequence.GetValue("stages").Split(',').Select(int.Parse).ToArray();
@@ -146,8 +178,7 @@ namespace NASA_CountDown.Config
                             Sequences.Add(sequence.GetValue("id"), ar);
                         }
                     }
-                else
-#endif
+                    else
                     {
                         Sequences.Clear();
                         if (FlightGlobals.ActiveVessel != null && !ConfigInfo.Instance.Sequences.ContainsKey(ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel)))
@@ -255,7 +286,7 @@ namespace NASA_CountDown.Config
             _wrapper.FromRect(WindowPosition);
 
             node.AddValue("position", _wrapper);
-            node.AddValue("engineControl", EngineControl);
+            node.AddValue("engineControl", LaunchSequenceControl);
             node.AddValue("abort", AbortExecuted);
             node.AddValue("scale", Scale);
 
@@ -264,7 +295,7 @@ namespace NASA_CountDown.Config
                 var seqNode = node.AddNode("sequence");
 
                 seqNode.AddValue("id", sequence.Key);
-                
+
                 string value = sequence.Value.Select(x => x.ToString()).Aggregate((x, y) => $"{x},{y}");
 
                 seqNode.AddValue("stages", value);
@@ -273,7 +304,8 @@ namespace NASA_CountDown.Config
 
         public Dictionary<string, AudioSet> AudioSets { get; } = new Dictionary<string, AudioSet>();
 
-        public AudioSet CurrentAudio  {
+        public AudioSet CurrentAudio
+        {
             get
             {
                 if (!ConfigInfo.Instance.IsSoundEnabled)

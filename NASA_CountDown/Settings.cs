@@ -29,6 +29,9 @@ namespace NASA_CountDown
         [GameParameters.CustomParameterUI("Keep buttons visible")]
         public bool keepButtonsVisible = true;
 
+        [GameParameters.CustomParameterUI("Default Launch Sequence Control")]
+        public bool LaunchSequenceControl = true;
+
 
         public float defaultInitialThrottle = 0.01f;
         [GameParameters.CustomFloatParameterUI("Default Initial Throttle (%)", displayFormat = "N0", minValue = 0, maxValue = 100, stepCount = 1, asPercentage = false)]
