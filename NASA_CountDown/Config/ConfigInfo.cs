@@ -7,13 +7,18 @@ using UnityEngine;
 namespace NASA_CountDown.Config
 {
     public class PerVesselOptions
+    {
+        internal bool LaunchSequenceControl { get; set; } = HighLogic.CurrentGame.Parameters.CustomParams<NC>().LaunchSequenceControl;
+        internal bool enableSAS { get; set; } = HighLogic.CurrentGame.Parameters.CustomParams<NC>().enableSAS;
+        internal float defaultInitialThrottle { get; set; } = HighLogic.CurrentGame.Parameters.CustomParams<NC>().defaultInitialThrottle;
+        internal float defaultThrottle { get; set; } = HighLogic.CurrentGame.Parameters.CustomParams<NC>().defaultThrottle;
+        internal bool useGravityTurn { get; set; } = false;
+
+        public PerVesselOptions()
         {
-            internal bool LaunchSequenceControl { get; set; } = HighLogic.CurrentGame.Parameters.CustomParams<NC>().LaunchSequenceControl;
-            internal bool enableSAS { get; set; } = HighLogic.CurrentGame.Parameters.CustomParams<NC>().enableSAS;
-            internal float defaultInitialThrottle { get; set; } = HighLogic.CurrentGame.Parameters.CustomParams<NC>().defaultInitialThrottle;
-            internal float defaultThrottle { get; set; } = HighLogic.CurrentGame.Parameters.CustomParams<NC>().defaultThrottle;
-            internal bool useGravityTurn { get; set; } = false;
+            Log.Info("Initting new PerVesselOptions");
         }
+    }
 
     class ConfigInfo //: IConfigNode
     {
@@ -80,7 +85,7 @@ namespace NASA_CountDown.Config
                 seqNode.AddValue("defaultInitialThrottle", VesselOptions[sequence.Key].defaultInitialThrottle);
                 seqNode.AddValue("defaultThrottle", VesselOptions[sequence.Key].defaultThrottle);
 
-        
+
                 string stages = "";
                 for (int i = 0; i < sequence.Value.Length; i++)
                 {
@@ -100,14 +105,15 @@ namespace NASA_CountDown.Config
             settingsFile.Save(PLUGINDATA);
         }
 
-        public void Load()
+        public ConfigNode Load()
         {
             LoadSounds();
             Log.Info("ConfigInfo.Load");
             ConfigNode settingsFile = ConfigNode.Load(PLUGINDATA);
+            ConfigNode node = null;
             if (settingsFile != null)
             {
-                ConfigNode node = settingsFile.GetNode(SETTINGSNAME);
+                 node = settingsFile.GetNode(SETTINGSNAME);
                 if (node != null)
                 {
                     if (node.HasValue("soundEnabled"))
@@ -135,7 +141,7 @@ namespace NASA_CountDown.Config
                         WindowPosition = _wrapper.ToRect(node.GetValue("position"));
                         Debug.LogWarning("Position is" + WindowPosition);
                     }
-                    
+
                     if (node.HasNode("sequence"))
                     {
                         var sequences = node.GetNodes("sequence");
@@ -183,6 +189,7 @@ namespace NASA_CountDown.Config
                     else
                     {
                         Sequences.Clear();
+                        VesselOptions.Clear();
                         if (FlightGlobals.ActiveVessel != null && !ConfigInfo.Instance.Sequences.ContainsKey(ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel)))
                         {
                             Sequences.Add(ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel), Enumerable.Repeat(-1, 10).ToArray());
@@ -193,15 +200,20 @@ namespace NASA_CountDown.Config
                     IsLoaded = true;
                 }
             }
-
-
+            else
+            {
+                Sequences.Clear();
+                VesselOptions.Clear();
+            }
+            return node;
         }
         public void InitNewConfig()
         {
             if (FlightGlobals.ActiveVessel != null && !ConfigInfo.Instance.Sequences.ContainsKey(ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel)))
             {
-                ConfigInfo.Instance.Sequences.Add(ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel), Enumerable.Repeat(-1, 10).ToArray());
-                ConfigInfo.Instance.VesselOptions.Add(ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel), new PerVesselOptions());
+                Log.Info("InitNewConfig for " + ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel));
+                Sequences.Add(ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel), Enumerable.Repeat(-1, 10).ToArray());
+                VesselOptions.Add(ModuleNASACountdown.CraftName(FlightGlobals.ActiveVessel), new PerVesselOptions());
             }
         }
 

@@ -54,7 +54,6 @@ namespace NASA_CountDown
 
             ConfigInfo.Instance.Load();
             GravityTurnAPI.GravityTurnActive = false;
-            ConfigInfo.Instance.InitNewConfig();
 
             toolbarControl = gameObject.AddComponent<ToolbarControl>();
             toolbarControl.AddToAllToolbars(ToggleOn,
@@ -73,7 +72,7 @@ namespace NASA_CountDown
             Log.Info("ToggleOff");
             _machine.RunEvent("Finish");
 
-            saveLoadWinPos.LoadWindowPositions();
+            //saveLoadWinPos.LoadWindowPositions();
             
             saveLoadWinPos.initialWindow = initial._windowRect;
             saveLoadWinPos.sequenceWindow = sequence._windowRect;
@@ -88,7 +87,7 @@ namespace NASA_CountDown
                 Debug.Log("ToggleOn, GravityturnActive");
                 return;
             }
-
+            ConfigInfo.Instance.InitNewConfig();
             Log.Info("ToggleOn");
             if (!_machine.Started)
             {

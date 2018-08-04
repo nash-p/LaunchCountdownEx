@@ -127,6 +127,7 @@ namespace NASA_CountDown
                 r = ScaleRect(GUIUtil.ScreenCenteredRect(width, height));
             }
 
+            Log.Info("GetWinPos, winName: " + winName + ",  r.x: " + r.x + ", r.y: " + r.y);
             return r;
         }
 
@@ -149,15 +150,17 @@ namespace NASA_CountDown
             Log.Info("LoadWindowPositions");
             loaded = true;
             ConfigNode settingsFile;
-            ConfigNode settings = new ConfigNode();
-;
-            settingsFile = ConfigNode.Load(PLUGINDATA);
-            if (settingsFile != null)
+            ConfigNode settings = ConfigInfo.Instance.Load();
+
+            if (settings != null)
+            { 
+                
+                sequenceWindow = GetWinPos(settings, "sequenceWindow", SEQ_WIDTH, SEQ_HEIGHT, false);
+                initialWindow = GetWinPos(settings, "initialWindow", CNT_WIDTH, CNT_HEIGHT);
+                settingsWindow = GetWinPos(settings, "settingsWindow", CFG_WIDTH, CFG_HEIGHT, false);
+            }
+            else
             {
-                settings = settingsFile.GetNode(SETTINGSNAME);
-
-                ConfigInfo.Instance.Load();
-
                 sequenceWindow = GetWinPos(settings, "sequenceWindow", SEQ_WIDTH, SEQ_HEIGHT, false);
                 initialWindow = GetWinPos(settings, "initialWindow", CNT_WIDTH, CNT_HEIGHT);
                 settingsWindow = GetWinPos(settings, "settingsWindow", CFG_WIDTH, CFG_HEIGHT, false);
