@@ -156,6 +156,4 @@ D:\Users\jbb\github\NASALaunchCountdownEx\NASA_CountDown\obj\Release\NASA_CountD
 D:\Users\jbb\github\NASALaunchCountdownEx\NASA_CountDown\bin\Release\ClickThroughBlocker.dll
 D:\Users\jbb\github\NASALaunchCountdownEx\NASA_CountDown\bin\Release\ToolbarControl.dll
 D:\Users\jbb\github\NASALaunchCountdownEx\NASA_CountDown\bin\Release\Ionic.Zip.dll
-D:\Users\jbb\github\NASALaunchCountdownEx\NASA_CountDown\bin\Release\RedShellSDK.dll
 D:\Users\jbb\github\NASALaunchCountdownEx\NASA_CountDown\obj\Release\NASA_CountDown.csproj.CopyComplete
-D:\Users\jbb\github\NASALaunchCountdownEx\NASA_CountDown\bin\Release\ClickThroughBlocker.pdb
