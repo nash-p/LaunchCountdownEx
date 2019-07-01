@@ -1,3 +1,11 @@
+1.3.8
+	Version bump for 1.7.2
+	Removed old code
+	Updated AssemblyVersion.tt to allow location-independent building
+	Added new parameter to line in LaunchState.cs for an overrideGroup, no idea, set to 0 for now
+	                // FireAction added a new parameter, overridegroup with no idea what it's for
+                BaseAction.FireAction(FlightGlobals.ActiveVessel.Parts, KSPActionGroup.Abort,0, KSPActionType.Activate);
+
 1.3.7.4
 	Version bump for 1.5.rebuild
 

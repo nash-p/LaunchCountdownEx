@@ -160,22 +160,7 @@ namespace NASA_CountDown
             _machine.AddState(launch);
             _machine.AddState(finish);
         }
-#if false
-        public override void OnLoad(ConfigNode node)
-        {
-            Log.Info("OnLoad");
-            ConfigInfo.Instance.Load(node);
-            //_button.SetFalse();
-            if (toolbarControl != null)
-                toolbarControl.SetFalse(true);
-            
-        }
 
-        public override void OnSave(ConfigNode node)
-        {
-            ConfigInfo.Instance.Save(node);
-        }
-#endif
 #region Unity
 
         public void FixedUpdate()
@@ -224,10 +209,7 @@ namespace NASA_CountDown
         {
             Log.Info("OnDestroy");
             _machine = null;
-#if false
-            if (_button != null)
-                ApplicationLauncher.Instance.RemoveModApplication(_button);
-#endif
+
             if (toolbarControl != null)
             {
                 toolbarControl.OnDestroy();

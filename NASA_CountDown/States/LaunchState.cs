@@ -101,7 +101,8 @@ namespace NASA_CountDown.States
 
             if (ConfigInfo.Instance.AbortExecuted)
             {
-                BaseAction.FireAction(FlightGlobals.ActiveVessel.Parts, KSPActionGroup.Abort, KSPActionType.Activate);
+                // FireAction added a new parameter, overridegroup with no idea what it's for
+                BaseAction.FireAction(FlightGlobals.ActiveVessel.Parts, KSPActionGroup.Abort,0, KSPActionType.Activate);
             }
 
             Machine.RunEvent("Init");

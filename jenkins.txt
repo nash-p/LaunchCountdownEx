@@ -50,6 +50,10 @@
 
 # 8: AdditionalMods to include
 
+NOT:1.4.5
+NOT:1.5.1
+NOT:1.6.1
+
 #
 # End of file
 #

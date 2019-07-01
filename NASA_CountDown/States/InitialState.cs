@@ -53,21 +53,8 @@ namespace NASA_CountDown.States
             StyleFactory.Scale = ConfigInfo.Instance.Scale;
             StyleFactory.Reload();
 
-#if false
-            if (!initialPos)
-            {
-                initialPos = true;
-                _windowRect = ScaleRect(GUIUtil.ScreenCenteredRect(459, 120));
-            }
-#else
             _windowRect = CountDownMain.instance.saveLoadWinPos.initialWindow;
-            //    CountDownMain.saveLoadWinPos.initialWindow;
-            //if (!initialPos)
-            //{
-            //    initialPos = true;
-            //    _windowRect = ScaleRect(_windowRect);
-            //}
-#endif            
+           
         }
 
         public override void Draw()
