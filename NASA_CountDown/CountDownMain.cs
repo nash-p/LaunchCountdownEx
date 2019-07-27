@@ -1,4 +1,6 @@
-﻿using KSP.UI.Screens;
+﻿using System.Collections;
+
+using KSP.UI.Screens;
 using NASA_CountDown.Common;
 using NASA_CountDown.Config;
 using NASA_CountDown.StateMachine;
@@ -34,6 +36,8 @@ namespace NASA_CountDown
         internal const string MODID = "Countdown_NS";
         internal const string MODNAME = "NASA CountDown Clock";
 
+        internal  Helpers.DummyComponent _dummy;
+
         public void Awake()
         //public override void OnAwake()
         {
@@ -46,6 +50,24 @@ namespace NASA_CountDown
             InitMachine();
 
             GravityTurnAPI.VerifyGTVersion();
+
+            _dummy = this.gameObject.AddComponent<Helpers.DummyComponent>();
+        }
+
+        private AudioSource _audioSource = null;
+        internal void PlaySound(AudioClip clip)
+        {
+            if (_audioSource == null)
+                _audioSource = this.gameObject.AddComponent<AudioSource>();
+            StartCoroutine(PlaySoundRoutine(clip));
+        }
+        private IEnumerator PlaySoundRoutine(AudioClip clip)
+        {
+            if (clip != null)
+            {
+                _audioSource.PlayOneShot(clip);
+                yield return new WaitForSeconds(clip.length);
+            }
         }
 
         void Start()
@@ -109,9 +131,6 @@ namespace NASA_CountDown
         private void InitMachine()
         {
             Log.Info("InitMachine");
-          //  if (saveLoadWinPos == null)
-           //     saveLoadWinPos = new SaveLoadWinPos();
-
 
             // Create the states
 

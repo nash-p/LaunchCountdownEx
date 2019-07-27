@@ -18,6 +18,7 @@ namespace NASA_CountDown.States
         protected GameObject _obj;
 
         protected DummyComponent _dummy;
+     
 
 
         public InitialState(string name, KerbalFsmEx machine) : base(name, machine)
@@ -50,6 +51,7 @@ namespace NASA_CountDown.States
 
             _obj = new GameObject("Helper");
             _dummy = _obj.AddComponent<DummyComponent>();
+
             StyleFactory.Scale = ConfigInfo.Instance.Scale;
             StyleFactory.Reload();
 

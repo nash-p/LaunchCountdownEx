@@ -93,19 +93,22 @@ namespace NASA_CountDown.States
             if (GravityTurnAPI.GravityTurnActive)
                 GravityTurnAPI.Kill();
             holdPlayed = true;
+
+
             if (clip != null)
             {
-                _audioSource.PlayOneShot(clip);
-                yield return new WaitForSeconds(clip.length);
+                CountDownMain.instance.PlaySound(clip);
             }
 
             if (ConfigInfo.Instance.AbortExecuted)
             {
+                FlightGlobals.ActiveVessel.ActionGroups.SetGroup(KSPActionGroup.Abort, true);
                 // FireAction added a new parameter, overridegroup with no idea what it's for
-                BaseAction.FireAction(FlightGlobals.ActiveVessel.Parts, KSPActionGroup.Abort,0, KSPActionType.Activate);
+                //BaseAction.FireAction(FlightGlobals.ActiveVessel.Parts, KSPActionGroup.Abort,0, KSPActionType.Activate);
             }
 
             Machine.RunEvent("Init");
+            yield return null;
         }
 
         private IEnumerator Hold()

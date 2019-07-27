@@ -52,23 +52,17 @@ namespace NASA_CountDown
             }
         }
 
-
-        //string SETTINGSNAME = "NASACountdown";
         string PLUGINDATA = KSPUtil.ApplicationRootPath + "GameData/NASA_CountDown/PluginData/NASACountdown.cfg";
 
         internal void SaveWinPos(ConfigNode settings, string winName, Rect win)
         {
             settings.SetValue(winName + "X", (win.x + 1).ToString(), true);
             settings.SetValue(winName + "Y", (win.y + 1).ToString(), true);
-
-            //settings.SetValue(winName + "W", win.width.ToString(), true);
-            //settings.SetValue(winName + "H", win.height.ToString(), true);
         }
 
         public void SaveSettings()
         {
             ConfigInfo.Instance.Save();
-            //SaveToFile();
         }
 
         static public string SafeLoad(string value, double oldvalue)

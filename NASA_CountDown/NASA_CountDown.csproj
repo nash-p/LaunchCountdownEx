@@ -44,6 +44,7 @@
     <Compile Include="Helpers\RectWrapper.cs" />
     <Compile Include="Helpers\StyleFactory.cs" />
     <Compile Include="Helpers\Utils.cs" />
+    <Compile Include="InstallChecker.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="ModuleNASACountdown.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
