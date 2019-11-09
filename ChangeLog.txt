@@ -1,3 +1,8 @@
+ChangeLog
+
+1.3.9
+	Updated for KSP 1.8
+
 1.3.8.1
 	Moved code to make abort sound after the FireAction
 	Changed abort code to use current action group set 
