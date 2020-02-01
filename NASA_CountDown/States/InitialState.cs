@@ -63,6 +63,7 @@ namespace NASA_CountDown.States
             _dummy = _obj.AddComponent<DummyComponent>();
 
             StyleFactory.Scale = ConfigInfo.Instance.Scale;
+
             StyleFactory.Reload();
 
             _windowRect = CountDownMain.instance.saveLoadWinPos.initialWindow;
@@ -170,6 +171,7 @@ namespace NASA_CountDown.States
             var buttonWidth = StyleFactory.ButtonLaunchStyle.fixedWidth;
             var buttonHeight = StyleFactory.ButtonLaunchStyle.fixedHeight;
 
+            Log.Info("DrawButtons, buttonWidth: " + buttonWidth + ", " + buttonHeight + ", xMin: " + _windowRect.xMin + ", yMax - delta: " + (_windowRect.yMax - _delta));
             //launch
             if (GUI.Button(new Rect(_windowRect.xMin, _windowRect.yMax - _delta, buttonWidth, buttonHeight),
                 string.Empty,

@@ -198,7 +198,10 @@ namespace NASA_CountDown.Helpers
             };
         }
 
-
+        static internal void NullIt()
+        {
+            MainWindowStyle = null;
+        }
         public static GUIStyle ButtonLaunchStyle { get; private set; }
 
         public static GUIStyle ButtonSettingsStyle { get; private set; }

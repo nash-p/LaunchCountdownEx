@@ -5,7 +5,7 @@ using NASA_CountDown.Common;
 using NASA_CountDown.Config;
 using NASA_CountDown.StateMachine;
 using NASA_CountDown.States;
-
+using NASA_CountDown.Helpers;
 using UnityEngine;
 
 using ToolbarControl_NS;
@@ -108,6 +108,8 @@ namespace NASA_CountDown
                 Debug.Log("ToggleOn, GravityturnActive");
                 return;
             }
+            StyleFactory.NullIt();
+            StyleFactory.Reload();
             NASA_CountDown.Config.ConfigInfo.Instance.InitNewConfig();
             Log.Info("ToggleOn");
             if (!_machine.Started)
