@@ -1,6 +1,8 @@
 Updated source code available from:  https://github.com/linuxgurugamer/LaunchCountdownEx
 Now on Spacedock and CKAN
 
+http://forum.kerbalspaceprogram.com/index.php?/topic/163882-13-nasa-countdown-clock-updated/
+
 =====================================================================================================
 
 Original thread: http://forum.kerbalspaceprogram.com/index.php?/topic/84692-nasa-countdown-v11b-113/
