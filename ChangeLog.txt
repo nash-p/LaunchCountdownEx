@@ -1,5 +1,8 @@
 ChangeLog
 
+1.3.9.1 (unreleased)
+	Added unique numbers for each window instead of the hardcoded "99"
+
 1.3.9
 	Updated for KSP 1.8
 

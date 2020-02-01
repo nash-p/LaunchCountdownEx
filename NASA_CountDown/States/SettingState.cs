@@ -113,8 +113,8 @@ namespace NASA_CountDown.States
 
         public override void Draw()
         {
-            _windowRect = KSPUtil.ClampRectToScreen(GUILayout.Window(99, _windowRect, DrawSettingsWindow, "", StyleFactory.SettingsStyle));
-            GUI.BringWindowToFront(99);
+            _windowRect = KSPUtil.ClampRectToScreen(ClickThruBlocker.GUIWindow(InitialState.baseWindowID + 2, _windowRect, DrawSettingsWindow, "", StyleFactory.SettingsStyle));
+            GUI.BringWindowToFront(InitialState.baseWindowID + 2);
         }
     }
 }

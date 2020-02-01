@@ -57,6 +57,8 @@ namespace NASA_CountDown.States
         //bool hold = false;
         protected override void DrawButtons()
         {
+            Log.Info("LaunchState.DrawButtons");
+
             var buttonWidth = StyleFactory.ButtonLaunchStyle.fixedWidth;
             var buttonHeight = StyleFactory.ButtonLaunchStyle.fixedHeight;
 

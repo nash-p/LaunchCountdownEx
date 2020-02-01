@@ -59,8 +59,8 @@ namespace NASA_CountDown.States
 
         public override void Draw()
         {
-            _windowRect = KSPUtil.ClampRectToScreen(ClickThruBlocker.GUIWindow(99, _windowRect, DrawSequenceWindow, "", StyleFactory.LaunchSequenceStyle));
-            GUI.BringWindowToFront(99);
+            _windowRect = KSPUtil.ClampRectToScreen(ClickThruBlocker.GUIWindow(InitialState.baseWindowID + 1, _windowRect, DrawSequenceWindow, "", StyleFactory.LaunchSequenceStyle));
+            GUI.BringWindowToFront(InitialState.baseWindowID + 1);
         }
 
         private void DrawSequenceWindow(int id)

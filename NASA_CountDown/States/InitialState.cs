@@ -4,8 +4,9 @@ using NASA_CountDown.Config;
 using NASA_CountDown.Helpers;
 using NASA_CountDown.StateMachine;
 using UnityEngine;
-
 using ClickThroughFix;
+
+
 
 namespace NASA_CountDown.States
 {
@@ -18,7 +19,16 @@ namespace NASA_CountDown.States
         protected GameObject _obj;
 
         protected DummyComponent _dummy;
-     
+
+        static internal int baseWindowID;
+        internal static String _AssemblyName { get { return System.Reflection.Assembly.GetExecutingAssembly().GetName().Name; } }
+
+        /*************************************************************************************************************************/
+        private void Start()
+        {
+            baseWindowID = UnityEngine.Random.Range(1000, 2000000) + _AssemblyName.GetHashCode();
+        }
+
 
 
         public InitialState(string name, KerbalFsmEx machine) : base(name, machine)
@@ -67,7 +77,7 @@ namespace NASA_CountDown.States
                 return;
             }
           
-            _windowRect = KSPUtil.ClampRectToScreen(ClickThruBlocker.GUIWindow(99, _windowRect, DrawMainWindow, "", StyleFactory.MainWindowStyle));
+            _windowRect = KSPUtil.ClampRectToScreen(ClickThruBlocker.GUIWindow(baseWindowID, _windowRect, DrawMainWindow, "", StyleFactory.MainWindowStyle));
 
             ConfigInfo.Instance.WindowPosition = _windowRect;
             if (!HighLogic.CurrentGame.Parameters.CustomParams<NC>().keepButtonsVisible)
@@ -106,7 +116,7 @@ namespace NASA_CountDown.States
 
             DrawButtons();
 
-            GUI.BringWindowToFront(99);
+            GUI.BringWindowToFront(baseWindowID);
         }
         static bool initted = false;
         static Texture2D[] digits = new Texture2D[10];
@@ -156,6 +166,7 @@ namespace NASA_CountDown.States
 
         protected virtual void DrawButtons()
         {
+            Log.Info("InitialState.DrawButtons");
             var buttonWidth = StyleFactory.ButtonLaunchStyle.fixedWidth;
             var buttonHeight = StyleFactory.ButtonLaunchStyle.fixedHeight;
 

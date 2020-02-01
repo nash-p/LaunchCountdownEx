@@ -78,8 +78,7 @@ namespace NASA_CountDown
             GravityTurnAPI.GravityTurnActive = false;
 
             toolbarControl = gameObject.AddComponent<ToolbarControl>();
-            toolbarControl.AddToAllToolbars(ToggleOn,
-                 ToggleOff,
+            toolbarControl.AddToAllToolbars(ToggleOn,ToggleOff,
                 ApplicationLauncher.AppScenes.FLIGHT,
                 MODID,
                 "countdownButton",
@@ -208,7 +207,8 @@ namespace NASA_CountDown
 
         public void OnGUI()
         {
-            toolbarControl.UseBlizzy(false);
+            //toolbarControl.UseBlizzy(false);
+            Log.Info("OnGUI, _machine.Started: " + _machine.Started);
             if (_machine.Started)
             {
                 var state = _machine.CurrentState as IGuiBehavior;
