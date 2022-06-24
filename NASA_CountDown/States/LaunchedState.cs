@@ -27,7 +27,9 @@ namespace NASA_CountDown.States
         {
             Log.Info("OnLeaveFromState: LaunchedState");
             _dummy.StopAllCoroutines();
-            _obj.DestroyGameObjectImmediate();
+            GameObject.Destroy(_obj);
+
+            //_obj.DestroyGameObjectImmediate();
      
         }
 

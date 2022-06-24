@@ -98,14 +98,20 @@ namespace NASA_CountDown
             string minVersion = "";
             if (GravityTurnAssembly == null)
             {
-
-                GravityTurnAssembly = GravityTurnAPI.VerifyAssemblyVersion("GravityTurn", minVersion);
+                gtName = "GravityTurn";
+                GravityTurnAssembly = GravityTurnAPI.VerifyAssemblyVersion(gtName, minVersion);
+                if (GravityTurnAssembly == null)
+                {
+                    gtName = "GravityTurnContinued";
+                    GravityTurnAssembly = GravityTurnAPI.VerifyAssemblyVersion(gtName, minVersion);
+                }
                 GTAvailable = (GravityTurnAssembly != null);
             }
-            //Log.Info("VerifyGTVersion, GTAvailable: " + GTAvailable);
+            Log.Info("VerifyGTVersion, GTAvailable: " + GTAvailable);
             return GravityTurnAssembly != null;
         }
 
+        static string gtName = "GravityTurn";
         public static bool Launch()
         {
             Log.Info("Launch");
@@ -118,7 +124,8 @@ namespace NASA_CountDown
             Log.Info("GravityTurn detected");
             try
             {
-                Type calledType = Type.GetType("GravityTurn.GravityTurner,GravityTurn");
+                //Type calledType = Type.GetType("GravityTurn.GravityTurner,GravityTurn");
+                Type calledType = Type.GetType("GravityTurn.GravityTurner," + gtName);
                 if (calledType != null)
                 {
                     MonoBehaviour GTRef = (MonoBehaviour)UnityEngine.Object.FindObjectOfType(calledType); //assumes only one instance of class GravityTurn exists as this command returns first instance found, also must inherit MonoBehavior for this command to work. Getting a reference to your Historian object another way would work also.
@@ -169,7 +176,8 @@ namespace NASA_CountDown
             Log.Info("GravityTurn detected");
             try
             {
-                Type calledType = Type.GetType("GravityTurn.GravityTurner,GravityTurn");
+                //Type calledType = Type.GetType("GravityTurn.GravityTurner,GravityTurn");
+                Type calledType = Type.GetType("GravityTurn.GravityTurner," + gtName);
                 if (calledType != null)
                 {
                     MonoBehaviour GTRef = (MonoBehaviour)UnityEngine.Object.FindObjectOfType(calledType); //assumes only one instance of class GravityTurn exists as this command returns first instance found, also must inherit MonoBehavior for this command to work. Getting a reference to your Historian object another way would work also.

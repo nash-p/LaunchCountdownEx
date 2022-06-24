@@ -210,7 +210,7 @@ namespace NASA_CountDown
         public void OnGUI()
         {
             //toolbarControl.UseBlizzy(false);
-            Log.Info("OnGUI, _machine.Started: " + _machine.Started);
+            //Log.Info("OnGUI, _machine.Started: " + _machine.Started);
             if (_machine.Started)
             {
                 var state = _machine.CurrentState as IGuiBehavior;

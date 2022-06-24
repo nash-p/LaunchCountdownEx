@@ -1,6 +1,6 @@
 {
   "NAME": "NASA_CountDown",
-  "URL": "http://ksp/spacetux.net/avc/NASA_CountDown",
+  "URL": "http://ksp.spacetux.net/avc/NASA_CountDown",
   "DOWNLOAD": "https://github.com/linuxgurugamer/LaunchCountdownEx/releases",
   "GITHUB": {
     "USERNAME": "linuxgurugamer",
@@ -9,12 +9,17 @@
   "VERSION": {
     "MAJOR": 1,
     "MINOR": 3,
-    "PATCH": 9,
-    "BUILD": 1
+    "PATCH": 10,
+    "BUILD": 0
+  },
+  "KSP_VERSION": {
+    "MAJOR": 1,
+    "MINOR": 12,
+    "PATCH": 3
   },
   "KSP_VERSION_MIN": {
     "MAJOR": 1,
-    "MINOR": 8,
+    "MINOR": 12,
     "PATCH": 0
   }
 }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 
 using UnityEngine;
-
+using System.Diagnostics;
 namespace NASA_CountDown
 {
     public class ModuleNASACountdown : PartModule
@@ -14,10 +14,21 @@ namespace NASA_CountDown
 
         public static string CraftName(Vessel v)
         {
-
-            foreach (var p in v.Parts)
+            Log.Info("CraftName");
+#if false
+            var stackTrace = new StackTrace(true);
+            foreach (var r in stackTrace.GetFrames())
             {
-                if (p.Modules.Contains<ModuleCommand>())
+                Console.WriteLine("Filename: {0} Method: {1} Line: {2} Column: {3}  ",
+                    r.GetFileName(), r.GetMethod(), r.GetFileLineNumber(),
+                    r.GetFileColumnNumber());
+            }
+#endif
+            for (int i = 0; i < v.Parts.Count; i++)
+            {
+                var p = v.Parts[i];
+
+                if (p != null && p.Modules.Contains<ModuleCommand>())
                 {
                     ModuleNASACountdown m = p.Modules.GetModule<ModuleNASACountdown>();
                     return m.craftName;
