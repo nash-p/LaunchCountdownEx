@@ -230,5 +230,5 @@ $RECYCLE.BIN/
 *.dll
 *.pdb
 
+#Workspace files for vscode users
 *.code-workspace
-ffmpeg-script.bat
