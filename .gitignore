@@ -231,3 +231,4 @@ $RECYCLE.BIN/
 *.pdb
 
 *.code-workspace
+ffmpeg-script.bat
