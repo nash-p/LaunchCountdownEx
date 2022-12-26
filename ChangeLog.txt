@@ -1,5 +1,21 @@
 ChangeLog
 
+1.3.11
+	Thanks to github user @nash-p for these new sounds:		
+		Apollo10 Launch Sounds
+		Apollo 11 Launch sounds
+		Added Apollo12 launch sounds
+		Apollo13 Launch Sounds
+		Apollo 16 launch sounds
+		Ariane 5 launch sounds
+		Aurora 7 Launch sounds
+		Freedom 7 launch sounds
+		Gemini 8 Launch sounds
+		Launch sounds for the greatest test flight
+		STS3 Launch Sounds
+		Launch sound for the Final Orbiter mission sts135
+	Made right scroll arrow a fixed width when selecting a sound
+
 1.3.10.1 
 	Fixed check for GravityTurn (dll got renamed)
 	Changed _obj.DestroyGameObjectImmediate() to GameObject.Destroy() in OnLeaveFromState (2 locations)

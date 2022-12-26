@@ -77,7 +77,7 @@ namespace NASA_CountDown.States
 
                 GUILayout.FlexibleSpace();
 
-                GUILayout.Label(ConfigInfo.Instance.SoundSet, StyleFactory.LabelStyle);
+                GUILayout.Label(ConfigInfo.Instance.SoundSet, StyleFactory.LabelStyle, GUILayout.Width(100));
 
                 GUILayout.FlexibleSpace();
 
